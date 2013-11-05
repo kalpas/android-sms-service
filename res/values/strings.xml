@@ -3,7 +3,9 @@
 
     <string name="app_name">testService</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">nothing to display</string>
     <string name="service_name">test_service</string>
+    <string name="edit_sender_hint">sender id to filter</string>
+    <string name="button_save">save</string>
 
 </resources>

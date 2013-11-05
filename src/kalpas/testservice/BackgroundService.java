@@ -10,6 +10,8 @@ public class BackgroundService extends Service {
     public static final String CHANNEL       = BackgroundService.class.getSimpleName() + ".broadcast";
 
     public static final String EXTRA_MESSAGE = "kalpas.BackgroundService.MESSAGE";
+    
+    private StorageWriter storage = new StorageWriter();
 
     @Override
     public void onCreate() {
@@ -28,8 +30,13 @@ public class BackgroundService extends Service {
             String msgBody = null;
             if (intent.hasExtra(EXTRA_MESSAGE)) {
                 msgBody = intent.getStringExtra(EXTRA_MESSAGE);
+                Toast.makeText(getApplicationContext(),"message: " + msgBody, Toast.LENGTH_SHORT).show();
+                if(storage.isAvailable()){
+                    storage.appendText(getApplicationContext(), "#"+msgBody+"\n");
+                }else{
+                    Toast.makeText(getBaseContext(), "storage not available", Toast.LENGTH_SHORT).show();
+                }
             }
-            Toast.makeText(getBaseContext(),"message: " + msgBody, Toast.LENGTH_SHORT).show();
         }
         return Service.START_STICKY;
     }
