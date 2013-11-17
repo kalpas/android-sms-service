@@ -26,17 +26,23 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="TestReceiver" >
+        <receiver android:name="kalpas.testservice.TestReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name="BackgroundService"
+            android:name="kalpas.testservice.BackgroundService"
             android:label="@string/service_name"
             android:process=":test_service" >
         </service>
+
+        <activity
+            android:name="kalpas.testservice.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="kalpas.testservice.MainActivity" >
+        </activity>
     </application>
 
 </manifest>

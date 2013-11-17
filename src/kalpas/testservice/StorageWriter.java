@@ -18,7 +18,7 @@ public class StorageWriter {
     public void appendText(Context context, String text) {
         File dir= new File(Environment.getExternalStorageDirectory().getPath() + "/smslog");
         dir.mkdirs();
-        File file = new File(dir, Preferences.getFile());
+        File file = new File(dir, "log.txt");
         Log.d(MainActivity.TAG, file.getAbsolutePath());
         FileOutputStream stream = null;
         try {

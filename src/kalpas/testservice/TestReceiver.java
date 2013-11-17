@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 
 public class TestReceiver extends BroadcastReceiver {
@@ -12,7 +13,7 @@ public class TestReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
-            String sender = Preferences.getSender(context);
+            String sender = PreferenceManager.getDefaultSharedPreferences(context).getString(MainActivity.KEY_PREFS_SENDER, "");
             Bundle bundle = intent.getExtras();
             SmsMessage[] msgs = null;
             String msg_from;

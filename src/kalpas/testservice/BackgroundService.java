@@ -1,5 +1,7 @@
 package kalpas.testservice;
 
+import kalpas.sms.parse.PumbSmsParser;
+import kalpas.sms.parse.PumbTransaction;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -12,6 +14,8 @@ public class BackgroundService extends Service {
     public static final String EXTRA_MESSAGE = "kalpas.BackgroundService.MESSAGE";
     
     private StorageWriter storage = new StorageWriter();
+    
+    private PumbSmsParser pumb = new PumbSmsParser();
 
     @Override
     public void onCreate() {
@@ -33,6 +37,8 @@ public class BackgroundService extends Service {
                 Toast.makeText(getApplicationContext(),"message: " + msgBody, Toast.LENGTH_SHORT).show();
                 if(storage.isAvailable()){
                     storage.appendText(getApplicationContext(), "#"+msgBody+"\n");
+                    PumbTransaction tx =  pumb.parsePumbSms(msgBody);
+                    Toast.makeText(getBaseContext(), tx.atm, Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getBaseContext(), "storage not available", Toast.LENGTH_SHORT).show();
                 }
@@ -44,6 +50,7 @@ public class BackgroundService extends Service {
     private void sendResult() {
         Intent intent = new Intent(CHANNEL);
         sendBroadcast(intent);
+        
     }
 
     @Override

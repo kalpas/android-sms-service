@@ -6,36 +6,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
-    TextView textView;
-    EditText sender;
-    
-    public static final String TAG = "kalpas.testservice";
+    public static final String TAG              = "kalpas.testservice";
+    public static final String KEY_PREFS_SENDER = "pref_sender";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.hello);
-        sender = (EditText) findViewById(R.id.sender);
-        
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         registerReceiver(receiver, new IntentFilter(BackgroundService.CHANNEL));
 
         Intent intent = new Intent(this, BackgroundService.class);
         startService(intent);
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
-        sender.setText(Preferences.getSender(this));
     }
 
     @Override
@@ -46,22 +41,33 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+            openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
-           @Override
-           public void onReceive(Context context,Intent intent) {
-               textView.setText("Message from Service");
-           }
-    };
-    
-    public void saveSender(View view){
-        EditText text = (EditText) findViewById(R.id.sender);
-        String sender = text.getText().toString();
-        Preferences.setSender(this, sender);
-        
-    }
+                                           @Override
+                                           public void onReceive(Context context, Intent intent) {
+                                               // textView.setText("Message from Service");
+                                           }
+                                       };
 
 }
