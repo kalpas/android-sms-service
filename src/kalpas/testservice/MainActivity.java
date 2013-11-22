@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
 
     public static final String TAG              = "kalpas.testservice";
     public static final String KEY_PREFS_SENDER = "pref_sender";
+    //public static final String KEY_PREFS_DEFAULT_CARD = "pref_default_card";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

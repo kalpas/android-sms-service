@@ -38,7 +38,7 @@ public class BackgroundService extends Service {
                 if(storage.isAvailable()){
                     storage.appendText(getApplicationContext(), "#"+msgBody+"\n");
                     PumbTransaction tx =  pumb.parsePumbSms(msgBody);
-                    Toast.makeText(getBaseContext(), tx.atm, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), tx.recipient, Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getBaseContext(), "storage not available", Toast.LENGTH_SHORT).show();
                 }
