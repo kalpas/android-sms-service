@@ -10,25 +10,17 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
-public class PersistentCard {
+public class CardDAO {
 
     private static final String CARDS_FILE_NAME = "card.json";
     private Gson                gson            = new Gson();
-    private Card                card;
 
-    @SuppressWarnings("unused")
-    private PersistentCard() {
-    }
 
-    public PersistentCard(Card card) {
-        this.card = card;
-    }
-
-    public void persist(Context context) {
+    public void save(Card card, Context context) {
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput(getFileName(), Context.MODE_PRIVATE);
-            fos.write(gson.toJson(this.card).getBytes());
+            fos = context.openFileOutput(getFileName(card.id), Context.MODE_PRIVATE);
+            fos.write(gson.toJson(card).getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -37,22 +29,21 @@ public class PersistentCard {
         }
     }
 
-    public void load(Context context){
+    public Card load(String cardId, Context context){
+        Card card = null;
         FileInputStream fis;
         try {
-            fis = context.openFileInput(getFileName());
+            fis = context.openFileInput(getFileName(cardId));
             card = gson.fromJson(new InputStreamReader(fis), Card.class);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public Card getCard() {
         return card;
     }
 
-    private String getFileName() {
-        return card.id + CARDS_FILE_NAME;
+
+    private String getFileName(String cardId) {
+        return cardId + CARDS_FILE_NAME;
     }
 
 }

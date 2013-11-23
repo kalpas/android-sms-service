@@ -6,7 +6,7 @@
     <string name="hello_world">nothing to display</string>
     <string name="service_name">test_service</string>
     <string name="edit_sender_hint">sender id to filter</string>
-    <string name="button_save">save</string>
+    <string name="button_refresh">refresh</string>
     <string name="pref_sender">Sender ID</string>
     <string name="pref_sender_summ">Sender ID to filter</string>
     <string name="title_activity_settings">SettingsActivity</string>
