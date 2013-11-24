@@ -1,7 +1,7 @@
 package kalpas.testservice.core;
 
 public class Transaction {
-
+    
     public Double amount;
     
     public String subject;

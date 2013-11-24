@@ -40,13 +40,11 @@ public class BackgroundService extends Service {
             String msgBody = null;
             if (intent.hasExtra(EXTRA_MESSAGE)) {
                 msgBody = intent.getStringExtra(EXTRA_MESSAGE);
-                Toast.makeText(getApplicationContext(),"message: " + msgBody, Toast.LENGTH_SHORT).show();
                 if(storage.isAvailable()){
                     storage.appendText(getApplicationContext(), "#"+msgBody+"\n");
                     PumbTransaction tx =  pumb.parsePumbSms(msgBody);
-                    core.addTransaction(tx, getApplicationContext());
-                    //for debug
-                    Toast.makeText(getApplicationContext(), tx.recipient, Toast.LENGTH_SHORT).show();
+                    core.processTransaction(tx, getApplicationContext());
+                    sendRefresh();
                 }else{
                     Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
                 }
@@ -55,7 +53,7 @@ public class BackgroundService extends Service {
         return Service.START_STICKY;
     }
 
-    private void sendResult() {
+    private void sendRefresh() {
         Intent intent = new Intent(CHANNEL);
         sendBroadcast(intent);
         

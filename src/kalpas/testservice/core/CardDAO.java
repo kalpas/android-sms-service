@@ -40,6 +40,10 @@ public class CardDAO {
         }
         return card;
     }
+    
+    public void delete(String cardId, Context context){
+        context.deleteFile(getFileName(cardId));
+    }
 
 
     private String getFileName(String cardId) {

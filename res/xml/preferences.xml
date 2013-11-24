@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <EditTextPreference 
+
+    <EditTextPreference
+        android:defaultValue="1234"
         android:key="pref_sender"
-        android:title="@string/pref_sender"
         android:summary="@string/pref_sender_summ"
-        android:defaultValue="1234"/>
-    
+        android:title="@string/pref_sender" />
+
+    <kalpas.testservice.ClearAllPreference
+        android:summary="@string/pref_clear_data_summ"
+        android:title="@string/pref_clear_data" />
 
 </PreferenceScreen>

@@ -45,6 +45,10 @@ public class TransactionsDAO {
         return transactions;
     }
 
+    public void delete(String cardId, Context context) {
+        context.deleteFile(getFileName(cardId));
+    }
+
     private String getFileName(String cardId) {
         return cardId + TRANSACTIONS_FILE_NAME;
     }

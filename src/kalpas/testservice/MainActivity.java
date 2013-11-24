@@ -44,6 +44,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action != null) {
+            if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
+                core.clearData(this);
+                refresh(null);
+            }
+        }
     }
 
     @Override
@@ -83,7 +91,7 @@ public class MainActivity extends Activity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
                                            @Override
                                            public void onReceive(Context context, Intent intent) {
-                                               // textView.setText("Message from Service");
+                                               refresh(null);
                                            }
                                        };
 
