@@ -34,8 +34,7 @@
 
         <service
             android:name="kalpas.testservice.BackgroundService"
-            android:label="@string/service_name"
-            android:process=":test_service" >
+            android:label="@string/service_name" >
         </service>
 
         <activity

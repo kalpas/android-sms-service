@@ -3,6 +3,8 @@ package kalpas.testservice;
 import kalpas.sms.parse.PumbSmsParser;
 import kalpas.sms.parse.PumbTransaction;
 import kalpas.testservice.core.Core;
+import kalpas.testservice.core.Transaction;
+import android.app.DialogFragment;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -10,21 +12,23 @@ import android.widget.Toast;
 
 public class BackgroundService extends Service {
 
-    public static final String CHANNEL       = BackgroundService.class.getSimpleName() + ".broadcast";
+    public static final String CHANNEL           = BackgroundService.class.getSimpleName() + ".broadcast";
 
-    public static final String EXTRA_MESSAGE = "kalpas.BackgroundService.MESSAGE";
-    
-    private StorageWriter storage = new StorageWriter();
-    
-    private PumbSmsParser pumb = new PumbSmsParser();
-    
-    private Core core;
+    public static final String EXTRA_MESSAGE     = "kalpas.BackgroundService.MESSAGE";
+    public static final String EXTRA_TRANSACTION = "kalpas.BackgroundService.TRANSACTION";
+    public static final String ACTION_EDIT       = "kalpas.BackgroundService.EDIT";
+
+    private StorageWriter      storage           = new StorageWriter();
+
+    private PumbSmsParser      pumb              = new PumbSmsParser();
+
+    private Core               core;
 
     @Override
     public void onCreate() {
         super.onCreate();
         core = new Core(getApplicationContext());
-        
+
     }
 
     @Override
@@ -40,12 +44,13 @@ public class BackgroundService extends Service {
             String msgBody = null;
             if (intent.hasExtra(EXTRA_MESSAGE)) {
                 msgBody = intent.getStringExtra(EXTRA_MESSAGE);
-                if(storage.isAvailable()){
-                    storage.appendText(getApplicationContext(), "#"+msgBody+"\n");
-                    PumbTransaction tx =  pumb.parsePumbSms(msgBody);
-                    core.processTransaction(tx, getApplicationContext());
-                    sendRefresh();
-                }else{
+                if (storage.isAvailable()) {
+                    storage.appendText(getApplicationContext(), "#" + msgBody + "\n");
+                    PumbTransaction pumbTx = pumb.parsePumbSms(msgBody);
+                    String cardId = core.getCardId(pumbTx);
+                    Transaction tx = core.processTransaction(pumbTx, cardId, getApplicationContext());
+                    sendEdit(tx);
+                } else {
                     Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -56,7 +61,16 @@ public class BackgroundService extends Service {
     private void sendRefresh() {
         Intent intent = new Intent(CHANNEL);
         sendBroadcast(intent);
-        
+
+    }
+
+    private void sendEdit(Transaction transaction) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(ACTION_EDIT);
+        intent.putExtra(EXTRA_TRANSACTION, transaction);
+        getApplicationContext().startActivity(intent);
+
     }
 
     @Override

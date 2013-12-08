@@ -1,6 +1,7 @@
 package kalpas.testservice;
 
 import kalpas.testservice.core.Core;
+import kalpas.testservice.core.Transaction;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -50,6 +52,11 @@ public class MainActivity extends Activity {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData(this);
                 refresh(null);
+            } else if (BackgroundService.ACTION_EDIT.equals(action)) {
+                Transaction trx = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
+                EditTranDetailsDialog dialog = new EditTranDetailsDialog();
+                dialog.transaction = trx;
+                dialog.show(getFragmentManager(), "edit");
             }
         }
     }

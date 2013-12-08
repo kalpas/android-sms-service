@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import kalpas.sms.parse.PumbTransaction;
 import android.content.Context;
@@ -48,7 +50,7 @@ public class Core {
 
     private void initCards(Context context) {
         Card card = null;
-        List<Transaction> transactionList = null;
+        Set<Transaction> trxSet = null;
         for (String id : cardIds) {
             card = cardDao.load(id, context);
             if (card == null) {
@@ -57,10 +59,10 @@ public class Core {
                 cardDao.save(card, context);
             }
 
-            transactionList = transactionsDao.load(id, context);
-            if (transactionList == null) {
-                transactionList = new ArrayList<Transaction>();
-                transactionsDao.save(transactionList, id, context);
+            trxSet = transactionsDao.load(id, context);
+            if (trxSet == null) {
+                trxSet = new HashSet<Transaction>();
+                transactionsDao.save(trxSet, id, context);
             }
         }
     }
@@ -82,28 +84,35 @@ public class Core {
         }
     }
 
-    public void processTransaction(PumbTransaction pumbTran, Context context) {
-        String cardId = null;
-        if (cardIds.size() == 1) {
-            cardId = cardIds.get(0);
-        } else {
-            Log.e(TAG, "card id can't be determined");
-            return;
-        }
+    public Transaction processTransaction(PumbTransaction pumbTran, String cardId, Context context) {
+        Transaction tran = null;
 
         switch (pumbTran.type) {
         case BLOCKED:
         case DEBITED:
-            processBlocked(pumbTran, context, cardId);
+            tran = processBlocked(pumbTran, context, cardId);
             break;
         case CREDITED:
-            processDebited(pumbTran, context, cardId);
+            tran = processDebited(pumbTran, context, cardId);
             break;
         default:
             Log.e(TAG, "no handler for transaction type " + pumbTran.type);
             break;
         }
 
+        return tran;
+
+    }
+
+    public String getCardId(PumbTransaction pumbTransaction) {
+        return "default";// FIXME
+    }
+
+    public void updateTransactionDetails(Transaction transaction, String cardId, Context context) {
+        Set<Transaction> transactions = transactionsDao.load(cardId, context);
+        transactions.remove(transaction);
+        transactions.add(transaction);
+        transactionsDao.save(transactions, cardId, context);
     }
 
     public String getSummary(Context context) {
@@ -114,7 +123,7 @@ public class Core {
         builder.append("available: " + card.left + "\n");
         builder.append("spent: " + card.spent + "\n");
 
-        List<Transaction> list = transactionsDao.load(cardId, context);
+        Set<Transaction> list = transactionsDao.load(cardId, context);
         builder.append("\nTransactions\n");
         for (Transaction tran : list) {
             builder.append(tran.amount + " " + tran.recipient + "\n");
@@ -122,33 +131,35 @@ public class Core {
         return builder.toString();
     }
 
-    private void processDebited(PumbTransaction pumbTran, Context context, String cardId) {
+    private Transaction processDebited(PumbTransaction pumbTran, Context context, String cardId) {
         Card card = cardDao.load(cardId, context);
         card.left = pumbTran.remainingAvailable;
         cardDao.save(card, context);
 
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
-        List<Transaction> transactions = transactionsDao.load(cardId, context);
-        Transaction tran = new Transaction();
+        Set<Transaction> transactions = transactionsDao.load(cardId, context);
+        Transaction tran = new Transaction(pumbTran.date);
         tran.amount = amount;
         tran.recipient = pumbTran.recipient;
         transactions.add(tran);
         transactionsDao.save(transactions, cardId, context);
+        return tran;
     }
 
-    private void processBlocked(PumbTransaction pumbTran, Context context, String cardId) {
+    private Transaction processBlocked(PumbTransaction pumbTran, Context context, String cardId) {
         Card card = cardDao.load(cardId, context);
         card.left = pumbTran.remainingAvailable;
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
         card.spent += amount;
         cardDao.save(card, context);
 
-        List<Transaction> transactions = transactionsDao.load(cardId, context);
-        Transaction tran = new Transaction();
+        Set<Transaction> transactions = transactionsDao.load(cardId, context);
+        Transaction tran = new Transaction(pumbTran.date);
         tran.amount = -amount;
         tran.recipient = pumbTran.recipient;
         transactions.add(tran);
         transactionsDao.save(transactions, cardId, context);
+        return tran;
     }
 
     public void clearData(Context context) {
