@@ -1,8 +1,10 @@
 package kalpas.testservice;
 
+import kalpas.testservice.EditTranDetailsDialog.NoticeDialogListener;
 import kalpas.testservice.core.Core;
 import kalpas.testservice.core.Transaction;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements NoticeDialogListener {
 
     public static final String TAG              = "kalpas.testservice";
     public static final String KEY_PREFS_SENDER = "pref_sender";
@@ -101,5 +102,12 @@ public class MainActivity extends Activity {
                                                refresh(null);
                                            }
                                        };
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Transaction tx = ((EditTranDetailsDialog) dialog).transaction;
+        core.updateTransactionDetails(tx, this);
+        refresh(null);
+    }
 
 }

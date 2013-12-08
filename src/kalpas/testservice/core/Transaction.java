@@ -12,6 +12,8 @@ public class Transaction implements Serializable {
         this.date = date.toString();
         this.id = date.getMillis();
     }
+    
+    public String cardId = "default";
 
     public Double amount;
 
