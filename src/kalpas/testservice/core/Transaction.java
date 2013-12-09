@@ -48,5 +48,10 @@ public class Transaction implements Serializable {
             return false;
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return amount + " " + (subject == null?recipient:subject) + "\n";
+    }
 
 }

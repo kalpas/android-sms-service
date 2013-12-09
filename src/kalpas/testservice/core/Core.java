@@ -67,6 +67,7 @@ public class Core {
         transactionsDao.save(transactions, context);
     }
 
+    @Deprecated
     public String getSummary(Context context) {
         Card card = cardDao.load(DEFAULT_CARD, context);
         StringBuilder builder = new StringBuilder();
@@ -83,6 +84,26 @@ public class Core {
                 builder.append(tran.recipient + "\n");
             }
         }
+        return builder.toString();
+    }
+
+    public String[] getTransactions(Context context) {
+        Set<Transaction> set = transactionsDao.load(context);
+        String[] transactions = new String[set.size()];
+
+        int i = 0;
+        for (Transaction tx : set) {
+            transactions[i++] = tx.toString();
+        }
+
+        return transactions;
+    }
+    
+    public String getAccountSummary(Context context){
+        Card card = cardDao.load(DEFAULT_CARD, context);
+        StringBuilder builder = new StringBuilder();
+        builder.append("available: " + card.left + "\n");
+        builder.append("spent: " + card.spent + "\n");
         return builder.toString();
     }
 

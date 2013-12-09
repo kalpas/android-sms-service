@@ -4,7 +4,6 @@ import kalpas.sms.parse.PumbSmsParser;
 import kalpas.sms.parse.PumbTransaction;
 import kalpas.testservice.core.Core;
 import kalpas.testservice.core.Transaction;
-import android.app.DialogFragment;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

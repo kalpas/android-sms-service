@@ -15,31 +15,43 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements NoticeDialogListener {
+public class MainActivity extends Activity implements NoticeDialogListener, OnItemClickListener {
 
-    public static final String TAG              = "kalpas.testservice";
-    public static final String KEY_PREFS_SENDER = "pref_sender";
-    // public static final String KEY_PREFS_DEFAULT_CARD = "pref_default_card";
+    public static final String   TAG              = "kalpas.testservice";
+    public static final String   KEY_PREFS_SENDER = "pref_sender";
 
-    private Core               core;
+    private Core                 core;
 
-    private TextView           textView;
+    private TextView             textView;
+    private ListView             listView;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set layout
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_alternative);
 
+        // init prefs
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        // register receiver
         registerReceiver(receiver, new IntentFilter(BackgroundService.CHANNEL));
 
+        // instantiate core
         core = new Core(getApplicationContext());
-
         textView = (TextView) findViewById(R.id.TextViewMain);
-        textView.setText(core.getSummary(getApplicationContext()));
+        listView = (ListView) findViewById(R.id.list);
+        listView.setOnItemClickListener(MainActivity.this);
 
+        // start background service
         Intent intent = new Intent(this, BackgroundService.class);
         startService(intent);
     }
@@ -47,6 +59,11 @@ public class MainActivity extends Activity implements NoticeDialogListener {
     @Override
     protected void onStart() {
         super.onStart();
+
+        textView.setText(core.getAccountSummary(this));
+        adapter = new ArrayAdapter<String>(this, R.layout.list_item, core.getTransactions(this));
+        listView.setAdapter(adapter);
+
         Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null) {
@@ -93,7 +110,12 @@ public class MainActivity extends Activity implements NoticeDialogListener {
     }
 
     public void refresh(View view) {
-        textView.setText(core.getSummary(getApplicationContext()));
+        refresh();
+    }
+
+    private void refresh() {
+        textView.setText(core.getAccountSummary(this));
+        adapter.notifyDataSetChanged();
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -108,6 +130,12 @@ public class MainActivity extends Activity implements NoticeDialogListener {
         Transaction tx = ((EditTranDetailsDialog) dialog).transaction;
         core.updateTransactionDetails(tx, this);
         refresh(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+       Toast.makeText(this,parent.toString()+ " "+ v.toString()+" "+ position + " " + id, Toast.LENGTH_SHORT).show();
+
     }
 
 }

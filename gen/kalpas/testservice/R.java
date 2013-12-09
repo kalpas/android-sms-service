@@ -28,16 +28,19 @@ public final class R {
         public static final int LinearLayout02=0x7f090003;
         public static final int TextView02=0x7f090002;
         public static final int TextViewMain=0x7f090001;
-        public static final int action_settings=0x7f090008;
-        public static final int amount=0x7f090005;
-        public static final int recipient=0x7f090004;
-        public static final int subject=0x7f090006;
-        public static final int tags=0x7f090007;
+        public static final int action_settings=0x7f090009;
+        public static final int amount=0x7f090006;
+        public static final int list=0x7f090004;
+        public static final int recipient=0x7f090005;
+        public static final int subject=0x7f090007;
+        public static final int tags=0x7f090008;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int activity_settings=0x7f030001;
-        public static final int dialog_edit_tran_details=0x7f030002;
+        public static final int activity_main_alternative=0x7f030001;
+        public static final int activity_settings=0x7f030002;
+        public static final int dialog_edit_tran_details=0x7f030003;
+        public static final int list_item=0x7f030004;
     }
     public static final class menu {
         public static final int settings=0x7f080000;
