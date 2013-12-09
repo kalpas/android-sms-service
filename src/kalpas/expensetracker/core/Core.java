@@ -1,10 +1,15 @@
 package kalpas.expensetracker.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import kalpas.sms.parse.PumbTransaction;
 import android.content.Context;
@@ -13,7 +18,7 @@ import android.util.Log;
 public class Core {
 
     private static final String DEFAULT_CARD    = "default";
-    private static final String TAG             = "kalpas.testservice.core.Core";
+    private static final String TAG             = "kalpas.expensetracker.core.Core";
 
     private CardDAO             cardDao         = new CardDAO();
     private TransactionsDAO     transactionsDao = new TransactionsDAO();
@@ -92,8 +97,11 @@ public class Core {
 
     public List<Transaction> getTransactions(Context context) {
         Set<Transaction> set = transactionsDao.load(context);
-        return Lists.newArrayList(set);
+        ArrayList<Transaction> txs = Lists.newArrayList(set);
+        Collections.sort(txs);
+        return txs;
     }
+
 
     public String getAccountSummary(Context context) {
         Card card = cardDao.load(DEFAULT_CARD, context);

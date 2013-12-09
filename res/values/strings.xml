@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Expense tracker</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
@@ -22,4 +23,6 @@
     <string name="subject">subject</string>
     <string name="tags">tags</string>
     <string name="not_specified">not specified</string>
+    <string name="title_activity_summary">Transactions summary</string>
+
 </resources>

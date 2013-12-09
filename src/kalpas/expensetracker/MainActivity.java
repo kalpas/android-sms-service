@@ -6,7 +6,7 @@ import kalpas.expensetracker.EditTranDetailsDialog.NoticeDialogListener;
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
-import kalpas.testservice.R;
+import kalpas.expensetracker.view.summary.SummaryActivity;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
@@ -23,11 +23,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements NoticeDialogListener, OnItemClickListener {
 
-    public static final String     TAG              = "kalpas.testservice";
+    public static final String     TAG              = "kalpas.expensetracker";
     public static final String     KEY_PREFS_SENDER = "pref_sender";
 
     private Core                   core;
@@ -69,18 +68,23 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
         listView.setAdapter(adapter);
 
         Intent intent = getIntent();
-        String action = intent.getAction();
+        String action = intent == null ? null : intent.getAction();
         if (action != null) {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData(this);
                 refresh(null);
             } else if (BackgroundService.ACTION_EDIT.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
-                EditTranDetailsDialog dialog = new EditTranDetailsDialog();
-                dialog.transaction = trx;
-                dialog.show(getFragmentManager(), "edit");
+                editTransaction(trx);
             }
         }
+        setIntent(null);
+    }
+
+    private void editTransaction(Transaction trx) {
+        EditTranDetailsDialog dialog = new EditTranDetailsDialog();
+        dialog.transaction = trx;
+        dialog.show(getFragmentManager(), "edit");
     }
 
     @Override
@@ -106,8 +110,11 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
         case R.id.action_refresh:
             refresh();
             return true;
+        case R.id.action_summary:
+            Intent intent= new Intent(this, SummaryActivity.class);
+            startActivity(intent);
         case R.id.action_add:
-            //TODO
+            // TODO
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -145,8 +152,10 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        Toast.makeText(this, parent.toString() + " " + v.toString() + " " + position + " " + id, Toast.LENGTH_SHORT)
-                .show();
+        // Toast.makeText(this, parent.toString() + " " + v.toString() + " " +
+        // position + " " + id, Toast.LENGTH_SHORT)
+        // .show();
+        editTransaction(adapter.getItem(position));
 
     }
 

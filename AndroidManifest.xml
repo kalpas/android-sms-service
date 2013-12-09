@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kalpas.testservice"
+    package="kalpas.expensetracker"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -41,6 +41,14 @@
             android:name="kalpas.expensetracker.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName="kalpas.expensetracker.MainActivity" >
+        </activity>
+        <activity
+            android:name="kalpas.expensetracker.view.summary.SummaryActivity"
+            android:label="@string/title_activity_summary"
+            android:parentActivityName="kalpas.expensetracker.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="kalpas.expensetracker.MainActivity" />
         </activity>
     </application>
 

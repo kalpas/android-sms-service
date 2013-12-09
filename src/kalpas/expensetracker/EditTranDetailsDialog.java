@@ -1,7 +1,7 @@
 package kalpas.expensetracker;
 
+import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
-import kalpas.testservice.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,6 +21,7 @@ public class EditTranDetailsDialog extends DialogFragment {
     private EditText   subject;
     private EditText   tags;
     private TextView   recipient;
+    private TextView   date;
 
     public interface NoticeDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
@@ -64,11 +65,14 @@ public class EditTranDetailsDialog extends DialogFragment {
         subject = (EditText) view.findViewById(R.id.subject);
         tags = (EditText) view.findViewById(R.id.tags);
         recipient = (TextView) view.findViewById(R.id.recipient);
+        date = (TextView) view.findViewById(R.id.date);
+        
 
         recipient.setText(transaction.recipient);
         amount.setText(transaction.amount.toString());
         subject.setText(transaction.subject);
-        tags.setText(transaction.subject);
+        tags.setText(transaction.tags);
+        date.setText(transaction.date);
 
         return builder.create();
     }
