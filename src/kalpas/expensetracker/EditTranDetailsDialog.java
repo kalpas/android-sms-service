@@ -1,6 +1,7 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
-import kalpas.testservice.core.Transaction;
+import kalpas.expensetracker.core.Transaction;
+import kalpas.testservice.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,16 +45,16 @@ public class EditTranDetailsDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_edit_tran_details, null);
         builder.setView(view).setMessage(R.string.dialog_tran_edit_message)
-                .setPositiveButton(R.string.dialog_tran_edit_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_tran_save_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         transaction.amount = Double.valueOf(amount.getText().toString());
                         transaction.subject = subject.getText().toString();
                         transaction.tags = tags.getText().toString();
-                        
+
                         mListener.onDialogPositiveClick(EditTranDetailsDialog.this);
                     }
-                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                }).setNegativeButton(R.string.dialog_tran_discard_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }

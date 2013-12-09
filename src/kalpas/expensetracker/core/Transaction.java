@@ -1,6 +1,7 @@
-package kalpas.testservice.core;
+package kalpas.expensetracker.core;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.joda.time.DateTime;
 
@@ -10,9 +11,9 @@ public class Transaction implements Serializable {
 
     public Transaction(DateTime date) {
         this.date = date.toString();
-        this.id = date.getMillis();
+        this.id = date.getMillis() + new Date().getTime();
     }
-    
+
     public String cardId = "default";
 
     public Double amount;
@@ -48,10 +49,10 @@ public class Transaction implements Serializable {
             return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
-        return amount + " " + (subject == null?recipient:subject) + "\n";
+        return amount + " " + (subject == null ? recipient : subject) + "\n";
     }
 
 }

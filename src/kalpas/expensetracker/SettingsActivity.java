@@ -1,4 +1,4 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
 import android.app.Activity;
 import android.os.Bundle;

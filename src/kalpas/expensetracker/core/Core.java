@@ -1,7 +1,10 @@
-package kalpas.testservice.core;
+package kalpas.expensetracker.core;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
 
 import kalpas.sms.parse.PumbTransaction;
 import android.content.Context;
@@ -87,19 +90,12 @@ public class Core {
         return builder.toString();
     }
 
-    public String[] getTransactions(Context context) {
+    public List<Transaction> getTransactions(Context context) {
         Set<Transaction> set = transactionsDao.load(context);
-        String[] transactions = new String[set.size()];
-
-        int i = 0;
-        for (Transaction tx : set) {
-            transactions[i++] = tx.toString();
-        }
-
-        return transactions;
+        return Lists.newArrayList(set);
     }
-    
-    public String getAccountSummary(Context context){
+
+    public String getAccountSummary(Context context) {
         Card card = cardDao.load(DEFAULT_CARD, context);
         StringBuilder builder = new StringBuilder();
         builder.append("available: " + card.left + "\n");

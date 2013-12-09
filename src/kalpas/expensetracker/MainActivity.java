@@ -1,8 +1,12 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
-import kalpas.testservice.EditTranDetailsDialog.NoticeDialogListener;
-import kalpas.testservice.core.Core;
-import kalpas.testservice.core.Transaction;
+import java.util.List;
+
+import kalpas.expensetracker.EditTranDetailsDialog.NoticeDialogListener;
+import kalpas.expensetracker.core.Core;
+import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.view.TransactionListAdapter;
+import kalpas.testservice.R;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
@@ -15,24 +19,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements NoticeDialogListener, OnItemClickListener {
 
-    public static final String   TAG              = "kalpas.testservice";
-    public static final String   KEY_PREFS_SENDER = "pref_sender";
+    public static final String     TAG              = "kalpas.testservice";
+    public static final String     KEY_PREFS_SENDER = "pref_sender";
 
-    private Core                 core;
+    private Core                   core;
 
-    private TextView             textView;
-    private ListView             listView;
-    private ArrayAdapter<String> adapter;
+    private TextView               textView;
+    private ListView               listView;
+    private TransactionListAdapter adapter;
+    private List<Transaction>      transactionListSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,8 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
         super.onStart();
 
         textView.setText(core.getAccountSummary(this));
-        adapter = new ArrayAdapter<String>(this, R.layout.list_item, core.getTransactions(this));
+        transactionListSource = core.getTransactions(this);
+        adapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
         listView.setAdapter(adapter);
 
         Intent intent = getIntent();
@@ -99,6 +103,11 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
         case R.id.action_settings:
             openSettings();
             return true;
+        case R.id.action_refresh:
+            refresh();
+            return true;
+        case R.id.action_add:
+            //TODO
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -115,6 +124,8 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
 
     private void refresh() {
         textView.setText(core.getAccountSummary(this));
+        adapter.clear();
+        adapter.addAll(core.getTransactions(this));
         adapter.notifyDataSetChanged();
     }
 
@@ -129,12 +140,13 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
     public void onDialogPositiveClick(DialogFragment dialog) {
         Transaction tx = ((EditTranDetailsDialog) dialog).transaction;
         core.updateTransactionDetails(tx, this);
-        refresh(null);
+        refresh();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-       Toast.makeText(this,parent.toString()+ " "+ v.toString()+" "+ position + " " + id, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, parent.toString() + " " + v.toString() + " " + position + " " + id, Toast.LENGTH_SHORT)
+                .show();
 
     }
 

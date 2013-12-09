@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">Expense tracker</string>
     <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_add">Add</string>
     <string name="hello_world">nothing to display</string>
     <string name="service_name">test_service</string>
     <string name="edit_sender_hint">sender id to filter</string>
@@ -14,8 +16,10 @@
     <string name="dialog_clear_all_message">Do you want to clear all application data?</string>
     <string name="dialog_clear_all">Clear</string>
     <string name="dialog_tran_edit_message">Please edit transaction details</string>
-    <string name="dialog_tran_edit_button">Edit</string>
+    <string name="dialog_tran_save_button">Save changes</string>
+    <string name="dialog_tran_discard_button">Discard changes</string>
     <string name="amount">amount</string>
     <string name="subject">subject</string>
     <string name="tags">tags</string>
+    <string name="not_specified">not specified</string>
 </resources>

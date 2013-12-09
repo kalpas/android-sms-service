@@ -7,7 +7,7 @@
         android:summary="@string/pref_sender_summ"
         android:title="@string/pref_sender" />
 
-    <kalpas.testservice.ClearAllPreference
+    <kalpas.expensetracker.ClearAllPreference
         android:summary="@string/pref_clear_data_summ"
         android:title="@string/pref_clear_data" />
 

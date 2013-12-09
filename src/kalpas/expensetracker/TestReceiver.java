@@ -1,4 +1,4 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

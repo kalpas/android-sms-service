@@ -1,5 +1,6 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
+import kalpas.testservice.R;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 

@@ -1,5 +1,6 @@
-package kalpas.testservice;
+package kalpas.expensetracker;
 
+import kalpas.testservice.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;

@@ -1,4 +1,4 @@
-package kalpas.testservice.core;
+package kalpas.expensetracker.core;
 
 public class Card {
 
