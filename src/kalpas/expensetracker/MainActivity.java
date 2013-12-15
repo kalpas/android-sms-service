@@ -7,6 +7,7 @@ import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
+import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;

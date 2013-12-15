@@ -18,7 +18,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
 
     public Double amount;
 
-    public String subject;
+    public String description;
 
     public String tags;
 
@@ -52,7 +52,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
 
     @Override
     public String toString() {
-        return amount + " " + (subject == null ? recipient : subject) + "\n";
+        return amount + " " + (description == null ? recipient : description) + "\n";
     }
 
     @Override

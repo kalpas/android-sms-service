@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <TextView
-        android:id="@+id/subject"
+        android:id="@+id/description"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -34,7 +34,7 @@
         android:id="@+id/recipient"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/subject"
+        android:layout_below="@id/description"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/amount"
         android:gravity="center_vertical"

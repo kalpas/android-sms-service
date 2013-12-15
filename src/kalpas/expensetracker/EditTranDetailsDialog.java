@@ -18,7 +18,7 @@ public class EditTranDetailsDialog extends DialogFragment {
     public Transaction transaction;
 
     private EditText   amount;
-    private EditText   subject;
+    private EditText   description;
     private EditText   tags;
     private TextView   recipient;
     private TextView   date;
@@ -50,7 +50,7 @@ public class EditTranDetailsDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         transaction.amount = Double.valueOf(amount.getText().toString());
-                        transaction.subject = subject.getText().toString();
+                        transaction.description = description.getText().toString();
                         transaction.tags = tags.getText().toString();
 
                         mListener.onDialogPositiveClick(EditTranDetailsDialog.this);
@@ -62,7 +62,7 @@ public class EditTranDetailsDialog extends DialogFragment {
                 });
 
         amount = (EditText) view.findViewById(R.id.amount);
-        subject = (EditText) view.findViewById(R.id.subject);
+        description = (EditText) view.findViewById(R.id.description);
         tags = (EditText) view.findViewById(R.id.tags);
         recipient = (TextView) view.findViewById(R.id.recipient);
         date = (TextView) view.findViewById(R.id.date);
@@ -70,7 +70,7 @@ public class EditTranDetailsDialog extends DialogFragment {
 
         recipient.setText(transaction.recipient);
         amount.setText(transaction.amount.toString());
-        subject.setText(transaction.subject);
+        description.setText(transaction.description);
         tags.setText(transaction.tags);
         date.setText(transaction.date);
 

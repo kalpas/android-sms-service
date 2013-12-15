@@ -86,8 +86,8 @@ public class Core {
         builder.append("\nTransactions\n");
         for (Transaction tran : set) {
             builder.append(tran.amount + " ");
-            if (tran.subject != null) {
-                builder.append(tran.subject + "\n");
+            if (tran.description != null) {
+                builder.append(tran.description + "\n");
             } else {
                 builder.append(tran.recipient + "\n");
             }

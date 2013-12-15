@@ -2,6 +2,7 @@ package kalpas.expensetracker;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import kalpas.sms.parse.PumbSmsParser;
 import kalpas.sms.parse.PumbTransaction;
 import android.app.Service;
@@ -47,7 +48,11 @@ public class BackgroundService extends Service {
                     storage.appendText(getApplicationContext(), "#" + msgBody + "\n");
                     PumbTransaction pumbTx = pumb.parsePumbSms(msgBody);
                     Transaction tx = core.processTransaction(pumbTx, getApplicationContext());
-                    sendEdit(tx);
+
+                    Intent intent2 = new Intent(getApplicationContext(), EditTransactionActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent2);
+                    // sendEdit(tx);
                 } else {
                     Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
                 }

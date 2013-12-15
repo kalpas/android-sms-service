@@ -13,7 +13,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="sans-serif" />
-    
+
     <TextView
         android:id="@+id/date"
         android:layout_width="match_parent"
@@ -59,5 +59,28 @@
         android:fontFamily="sans-serif"
         android:hint="@string/tags"
         android:inputType="text" />
+
+    <LinearLayout
+        style=" ?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_discard"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dialog_tran_discard_button" />
+
+        <Button
+            android:id="@+id/button_save"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dialog_tran_save_button" />
+    </LinearLayout>
 
 </LinearLayout>

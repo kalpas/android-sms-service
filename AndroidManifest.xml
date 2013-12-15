@@ -21,7 +21,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -49,6 +48,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="kalpas.expensetracker.MainActivity" />
+        </activity>
+        <activity
+            android:name="kalpas.expensetracker.view.transaction.edit.EditTransactionActivity"
+            android:label="@string/dialog_tran_edit_message"
+            android:theme="@android:style/Theme.Holo.Dialog" >
         </activity>
     </application>
 

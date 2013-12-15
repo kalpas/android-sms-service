@@ -41,7 +41,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         Transaction tx = items.get(position);
         if (tx != null) {
             TextView amount = (TextView) itemView.findViewById(R.id.amount);
-            TextView subject = (TextView) itemView.findViewById(R.id.subject);
+            TextView description = (TextView) itemView.findViewById(R.id.description);
             TextView recipient = (TextView) itemView.findViewById(R.id.recipient);
 
             String txAmountString = tx.amount.toString();
@@ -53,12 +53,16 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             }
             amount.setText(txAmountString);
 
-            if (!StringUtils.isEmpty(tx.subject)) {
-                subject.setText(tx.subject);
+            if (!StringUtils.isEmpty(tx.description)) {
+                description.setText(tx.description);
+            } else {
+                description.setText(R.string.not_specified);
             }
 
             if (!StringUtils.isEmpty(tx.recipient)) {
                 recipient.setText(tx.recipient);
+            } else {
+                recipient.setText(R.string.not_specified);
             }
         }
 
