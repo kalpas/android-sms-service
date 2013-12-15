@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 
-public class TestReceiver extends BroadcastReceiver {
+public class IncomingMessageReceiver extends BroadcastReceiver {
     
 
     @Override
@@ -28,6 +28,7 @@ public class TestReceiver extends BroadcastReceiver {
                         if (sender.equals(msg_from)) {
                             String msgBody = msgs[i].getMessageBody();
                             Intent startService = new Intent(context, BackgroundService.class);
+                            startService.setAction(BackgroundService.ACTION_ADD);
                             startService.putExtra(BackgroundService.EXTRA_MESSAGE, msgBody);
                             context.startService(startService);
                         }

@@ -2,14 +2,12 @@ package kalpas.expensetracker;
 
 import java.util.List;
 
-import kalpas.expensetracker.EditTranDetailsDialog.NoticeDialogListener;
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
 import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements NoticeDialogListener, OnItemClickListener {
+public class MainActivity extends Activity implements OnItemClickListener {
 
     public static final String     TAG              = "kalpas.expensetracker";
     public static final String     KEY_PREFS_SENDER = "pref_sender";
@@ -54,9 +52,9 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(MainActivity.this);
 
-        // start background service
-        Intent intent = new Intent(this, BackgroundService.class);
-        startService(intent);
+        // // start background service
+        // Intent intent = new Intent(this, BackgroundService.class);
+        // startService(intent);
     }
 
     @Override
@@ -74,18 +72,16 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData(this);
                 refresh(null);
-            } else if (BackgroundService.ACTION_EDIT.equals(action)) {
-                Transaction trx = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
-                editTransaction(trx);
             }
         }
         setIntent(null);
     }
 
     private void editTransaction(Transaction trx) {
-        EditTranDetailsDialog dialog = new EditTranDetailsDialog();
-        dialog.transaction = trx;
-        dialog.show(getFragmentManager(), "edit");
+        Intent intent = new Intent(getApplicationContext(), EditTransactionActivity.class);
+        intent.setAction(EditTransactionActivity.ACTION_EDIT);
+        intent.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
+        startActivity(intent);
     }
 
     @Override
@@ -112,7 +108,7 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
             refresh();
             return true;
         case R.id.action_summary:
-            Intent intent= new Intent(this, SummaryActivity.class);
+            Intent intent = new Intent(this, SummaryActivity.class);
             startActivity(intent);
         case R.id.action_add:
             // TODO
@@ -140,16 +136,9 @@ public class MainActivity extends Activity implements NoticeDialogListener, OnIt
     private BroadcastReceiver receiver = new BroadcastReceiver() {
                                            @Override
                                            public void onReceive(Context context, Intent intent) {
-                                               refresh(null);
+                                               refresh();
                                            }
                                        };
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Transaction tx = ((EditTranDetailsDialog) dialog).transaction;
-        core.updateTransactionDetails(tx, this);
-        refresh();
-    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

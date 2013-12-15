@@ -8,15 +8,17 @@ import kalpas.sms.parse.PumbTransaction;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 public class BackgroundService extends Service {
 
     public static final String CHANNEL           = BackgroundService.class.getSimpleName() + ".broadcast";
 
-    public static final String EXTRA_MESSAGE     = "kalpas.BackgroundService.MESSAGE";
-    public static final String EXTRA_TRANSACTION = "kalpas.BackgroundService.TRANSACTION";
-    public static final String ACTION_EDIT       = "kalpas.BackgroundService.EDIT";
+    public static final String EXTRA_MESSAGE     = "kalpas.BackgroundService.EXTRA_MESSAGE";
+    public static final String EXTRA_TRANSACTION = "kalpas.BackgroundService.EXTRA_TRANSACTION";
+    public static final String ACTION_ADD        = "kalpas.BackgroundService.ACTION_ADD";
+    public static final String ACTION_UPDATE     = "kalpas.BackgroundService.ACTION_UPDATE";
 
     private StorageWriter      storage           = new StorageWriter();
 
@@ -40,23 +42,30 @@ public class BackgroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (intent != null) {
-            String msgBody = null;
-            if (intent.hasExtra(EXTRA_MESSAGE)) {
-                msgBody = intent.getStringExtra(EXTRA_MESSAGE);
-                if (storage.isAvailable()) {
-                    storage.appendText(getApplicationContext(), "#" + msgBody + "\n");
-                    PumbTransaction pumbTx = pumb.parsePumbSms(msgBody);
-                    Transaction tx = core.processTransaction(pumbTx, getApplicationContext());
+        String action = intent != null ? intent.getAction() : null;
 
-                    Intent intent2 = new Intent(getApplicationContext(), EditTransactionActivity.class);
-                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent2);
-                    // sendEdit(tx);
-                } else {
-                    Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
+        if (action != null) {
+            if (ACTION_ADD.equals(action)) {
+                String msgBody = null;
+                if (intent.hasExtra(EXTRA_MESSAGE)) {
+                    msgBody = intent.getStringExtra(EXTRA_MESSAGE);
+                    if (storage.isAvailable()) {
+                        storage.appendText(getApplicationContext(), "#" + msgBody + "\n");
+                        PumbTransaction pumbTx = pumb.parsePumbSms(msgBody);
+                        Transaction tx = core.processTransaction(pumbTx, getApplicationContext());
+                        sendEdit(tx);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
+                    }
                 }
+            } else if (ACTION_UPDATE.equals(action)) {
+                Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
+                core.updateTransactionDetails(trx, this);
+                // Log.e(MainActivity.TAG, "ACTION_UPDATE not implemented");
+            } else {
+                Log.e(getClass().toString(), "no such action");
             }
+            sendRefresh();
         }
         return Service.START_STICKY;
     }
@@ -68,11 +77,12 @@ public class BackgroundService extends Service {
     }
 
     private void sendEdit(Transaction transaction) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(ACTION_EDIT);
+
+        Intent intent = new Intent(getApplicationContext(), EditTransactionActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setAction(EditTransactionActivity.ACTION_EDIT);
         intent.putExtra(EXTRA_TRANSACTION, transaction);
-        getApplicationContext().startActivity(intent);
+        startActivity(intent);
 
     }
 
