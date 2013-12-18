@@ -17,8 +17,11 @@ public class BackgroundService extends Service {
 
     public static final String EXTRA_MESSAGE     = "kalpas.BackgroundService.EXTRA_MESSAGE";
     public static final String EXTRA_TRANSACTION = "kalpas.BackgroundService.EXTRA_TRANSACTION";
-    public static final String ACTION_ADD        = "kalpas.BackgroundService.ACTION_ADD";
+    public static final String ACTION_PARSE        = "kalpas.BackgroundService.ACTION_PARSE";
     public static final String ACTION_UPDATE     = "kalpas.BackgroundService.ACTION_UPDATE";
+    public static final String ACTION_ADD     = "kalpas.BackgroundService.ACTION_ADD";
+    public static final String ACTION_REMOVE = "kalpas.BackgroundService.ACTION_REMOVE";
+
 
     private StorageWriter      storage           = new StorageWriter();
 
@@ -45,7 +48,7 @@ public class BackgroundService extends Service {
         String action = intent != null ? intent.getAction() : null;
 
         if (action != null) {
-            if (ACTION_ADD.equals(action)) {
+            if (ACTION_PARSE.equals(action)) {
                 String msgBody = null;
                 if (intent.hasExtra(EXTRA_MESSAGE)) {
                     msgBody = intent.getStringExtra(EXTRA_MESSAGE);
@@ -61,8 +64,14 @@ public class BackgroundService extends Service {
             } else if (ACTION_UPDATE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
                 core.updateTransactionDetails(trx, this);
-                // Log.e(MainActivity.TAG, "ACTION_UPDATE not implemented");
-            } else {
+            }else if(ACTION_ADD.equals(action)){
+                Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
+                core.addTransaction(trx, this);
+            }else if(ACTION_REMOVE.equals(action)){
+                Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
+                core.removeTransaction(trx, this);
+            }
+            else {
                 Log.e(getClass().toString(), "no such action");
             }
             sendRefresh();

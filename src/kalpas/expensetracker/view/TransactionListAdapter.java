@@ -30,13 +30,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View itemView = convertView;
-
-        if (itemView == null) {
-
-            LayoutInflater inflater = LayoutInflater.from(context);
-            itemView = inflater.inflate(resource, null);
-        }
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View itemView = inflater.inflate(resource, null);
 
         Transaction tx = items.get(position);
         if (tx != null) {
@@ -55,14 +50,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
             if (!StringUtils.isEmpty(tx.description)) {
                 description.setText(tx.description);
-            } else {
-                description.setText(R.string.not_specified);
             }
 
             if (!StringUtils.isEmpty(tx.recipient)) {
                 recipient.setText(tx.recipient);
-            } else {
-                recipient.setText(R.string.not_specified);
             }
         }
 

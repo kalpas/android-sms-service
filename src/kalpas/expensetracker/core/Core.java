@@ -65,6 +65,19 @@ public class Core {
         return "default";// FIXME
     }
 
+    public void addTransaction(Transaction transaction, Context context) {
+        Set<Transaction> transactions = transactionsDao.load(context);
+        transactions.add(transaction);
+        transactionsDao.save(transactions, context);
+    }
+
+    public void removeTransaction(Transaction trx, Context context) {
+        Set<Transaction> transactions = transactionsDao.load(context);
+        transactions.remove(trx);
+        transactionsDao.save(transactions, context);
+
+    }
+
     public void updateTransactionDetails(Transaction transaction, Context context) {
         Set<Transaction> transactions = transactionsDao.load(context);
         transactions.remove(transaction);
@@ -98,7 +111,6 @@ public class Core {
         Collections.sort(txs);
         return txs;
     }
-
 
     public String getAccountSummary(Context context) {
         Card card = cardDao.load(DEFAULT_CARD, context);
@@ -144,5 +156,4 @@ public class Core {
         transactionsDao.deleteAll(context);
         initCards(context);
     }
-
 }

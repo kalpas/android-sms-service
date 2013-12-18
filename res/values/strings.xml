@@ -21,9 +21,12 @@
     <string name="dialog_tran_discard_button">Discard changes</string>
     <string name="amount">amount</string>
     <string name="description">description</string>
+    <string name="remove_transaction">Remove</string>
+    <string name="remove_transaction_message">Do you want to remove transaction?</string>
     <string name="tags">tags</string>
     <string name="not_specified">not specified</string>
     <string name="title_activity_summary">Transactions summary</string>
     <string name="title_activity_edit_transaction">EditTransactionActivity</string>
+    <string name="title_activity_add_transaction">Specify transaction details</string>
 
 </resources>

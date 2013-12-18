@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
+import com.google.common.primitives.Longs;
+
 public class Transaction implements Serializable, Comparable<Transaction> {
 
     private static final long serialVersionUID = 392982765103974346L;
@@ -57,7 +59,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
 
     @Override
     public int compareTo(Transaction another) {
-        return Long.compare(this.id, another.id);
+        return Longs.compare(this.id, another.id);
     }
 
 }

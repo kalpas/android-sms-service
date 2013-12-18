@@ -6,7 +6,10 @@ import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
+import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
 import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
+import kalpas.expensetracker.view.transaction.remove.RemoveTransactionDialog;
+import kalpas.expensetracker.view.transaction.remove.RemoveTransactionDialog.RemoveTransactionListener;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,10 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnItemClickListener {
+public class MainActivity extends Activity implements OnItemClickListener, OnItemLongClickListener,
+        RemoveTransactionListener {
 
     public static final String     TAG              = "kalpas.expensetracker";
     public static final String     KEY_PREFS_SENDER = "pref_sender";
@@ -51,10 +56,8 @@ public class MainActivity extends Activity implements OnItemClickListener {
         textView = (TextView) findViewById(R.id.TextViewMain);
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(MainActivity.this);
+        listView.setOnItemLongClickListener(MainActivity.this);
 
-        // // start background service
-        // Intent intent = new Intent(this, BackgroundService.class);
-        // startService(intent);
     }
 
     @Override
@@ -78,10 +81,17 @@ public class MainActivity extends Activity implements OnItemClickListener {
     }
 
     private void editTransaction(Transaction trx) {
-        Intent intent = new Intent(getApplicationContext(), EditTransactionActivity.class);
+        Intent intent = new Intent(this, EditTransactionActivity.class);
         intent.setAction(EditTransactionActivity.ACTION_EDIT);
         intent.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
         startActivity(intent);
+    }
+
+    private void removeTransaction(Transaction trx) {
+        Intent service = new Intent(this, BackgroundService.class);
+        service.setAction(BackgroundService.ACTION_REMOVE);
+        service.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
+        startService(service);
     }
 
     @Override
@@ -108,10 +118,13 @@ public class MainActivity extends Activity implements OnItemClickListener {
             refresh();
             return true;
         case R.id.action_summary:
-            Intent intent = new Intent(this, SummaryActivity.class);
-            startActivity(intent);
+            Intent summaryIntent = new Intent(this, SummaryActivity.class);
+            startActivity(summaryIntent);
+            return true;
         case R.id.action_add:
-            // TODO
+            Intent addIntent = new Intent(this, AddTransactionActivity.class);
+            startActivity(addIntent);
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -142,11 +155,23 @@ public class MainActivity extends Activity implements OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        // Toast.makeText(this, parent.toString() + " " + v.toString() + " " +
-        // position + " " + id, Toast.LENGTH_SHORT)
-        // .show();
         editTransaction(adapter.getItem(position));
 
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        RemoveTransactionDialog dialog = new RemoveTransactionDialog();
+        dialog.transaction = adapter.getItem(position);
+        dialog.show(getFragmentManager(), "remove_transaction");
+        return true;
+    }
+
+    @Override
+    public void onDialogPositiveClick(RemoveTransactionDialog dialog) {
+        if (dialog.transaction != null) {
+            removeTransaction(dialog.transaction);
+        }
     }
 
 }

@@ -16,7 +16,8 @@
         android:minHeight="16dp"
         android:minWidth="100dp"
         android:text="600"
-        android:textAppearance="?android:attr/textAppearanceSmall"/>
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/holo_green_light" />
 
     <TextView
         android:id="@+id/description"

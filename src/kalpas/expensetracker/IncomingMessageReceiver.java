@@ -28,7 +28,7 @@ public class IncomingMessageReceiver extends BroadcastReceiver {
                         if (sender.equals(msg_from)) {
                             String msgBody = msgs[i].getMessageBody();
                             Intent startService = new Intent(context, BackgroundService.class);
-                            startService.setAction(BackgroundService.ACTION_ADD);
+                            startService.setAction(BackgroundService.ACTION_PARSE);
                             startService.putExtra(BackgroundService.EXTRA_MESSAGE, msgBody);
                             context.startService(startService);
                         }
