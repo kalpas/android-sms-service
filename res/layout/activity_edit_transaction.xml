@@ -16,16 +16,31 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:background="@android:color/darker_gray"
             android:onClick="discard"
             android:text="@string/dialog_tran_discard_button" />
+
+        <Button
+            android:id="@+id/button_split"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@android:color/holo_blue_light"
+            android:onClick="split"
+            android:text="@string/dialog_tran_split_button" />
 
         <Button
             android:id="@+id/button_save"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:background="@android:color/holo_green_light"
             android:onClick="update"
             android:text="@string/dialog_tran_save_button" />
     </LinearLayout>

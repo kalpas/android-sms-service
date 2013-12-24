@@ -19,6 +19,7 @@
     <string name="dialog_tran_edit_message">Please edit transaction details</string>
     <string name="dialog_tran_save_button">Save changes</string>
     <string name="dialog_tran_discard_button">Discard changes</string>
+    <string name="dialog_tran_split_button">Split</string>
     <string name="amount">amount</string>
     <string name="description">description</string>
     <string name="remove_transaction">Remove</string>

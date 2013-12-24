@@ -1,13 +1,13 @@
 package kalpas.expensetracker.view.transaction.edit;
 
+import static kalpas.expensetracker.view.utils.Util.dateFormat;
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,21 +16,21 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EditTransactionActivity extends Activity {
 
-    private final DateTimeFormatter dateFormat  = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    public static final String ACTION_EDIT       = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
+    public static final String ACTION_SAVE_SPLIT = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SAVE_SPLIT";
 
-    public static final String      ACTION_EDIT = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
+    private EditText           amount;
+    private EditText           description;
+    private EditText           tags;
+    private TextView           recipient;
+    private TextView           date;
+    private LinearLayout       parent;
 
-    private EditText                amount;
-    private EditText                description;
-    private EditText                tags;
-    private TextView                recipient;
-    private TextView                date;
-    private LinearLayout            parent;
-
-    private Transaction             transaction;
+    private Transaction        transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +49,22 @@ public class EditTransactionActivity extends Activity {
         tags = (EditText) findViewById(R.id.tags);
         recipient = (TextView) findViewById(R.id.recipient);
         date = (TextView) findViewById(R.id.date);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         Intent intent = getIntent();
         String action = intent == null ? null : intent.getAction();
 
-        if (ACTION_EDIT.equals(action)) {
+        if (ACTION_EDIT.equals(action) || ACTION_SAVE_SPLIT.equals(action)) {
+
             transaction = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
+
+            if (ACTION_SAVE_SPLIT.equals(action)) {
+                sendUpdate();
+            }
 
             if (StringUtils.isEmpty(transaction.recipient)) {
                 parent.removeView(recipient);
@@ -66,15 +76,19 @@ public class EditTransactionActivity extends Activity {
             tags.setText(transaction.tags);
             DateTime time = new DateTime(transaction.date);
             date.setText(dateFormat.print(time));
-
         }
-
         setIntent(null);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         transaction = null;
     }
 
@@ -83,18 +97,37 @@ public class EditTransactionActivity extends Activity {
     }
 
     public void update(View view) {
-        if (transaction != null) {
-            transaction.amount = Double.valueOf(amount.getText().toString());
-            transaction.description = description.getText().toString();
-            transaction.tags = tags.getText().toString();
-
-            Intent update = new Intent(this, BackgroundService.class);
-            update.setAction(BackgroundService.ACTION_UPDATE);
-            update.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
-            startService(update);
-
-        }
-
+        update();
         this.finish();
+    }
+
+    private void update() {
+        updateWithChanges();
+        sendUpdate();
+    }
+
+    private void sendUpdate() {
+        Intent update = new Intent(this, BackgroundService.class);
+        update.setAction(BackgroundService.ACTION_UPDATE);
+        update.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+        startService(update);
+    }
+
+    private void updateWithChanges() {
+        transaction.amount = Double.valueOf(amount.getText().toString());
+        transaction.description = description.getText().toString();
+        transaction.tags = tags.getText().toString();
+    }
+
+    public void split(View view) {
+        updateWithChanges();
+        sendSplit();
+    }
+
+    private void sendSplit() {
+        Intent splitIntent = new Intent(this, AddTransactionActivity.class);
+        splitIntent.setAction(AddTransactionActivity.ACTION_SPLIT);
+        splitIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+        startActivity(splitIntent);
     }
 }
