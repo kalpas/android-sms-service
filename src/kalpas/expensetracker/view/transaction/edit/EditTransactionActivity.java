@@ -1,10 +1,10 @@
 package kalpas.expensetracker.view.transaction.edit;
 
-import static kalpas.expensetracker.view.utils.Util.dateFormat;
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
+import kalpas.expensetracker.view.utils.DateTimeUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class EditTransactionActivity extends Activity {
 
@@ -75,7 +74,7 @@ public class EditTransactionActivity extends Activity {
             description.setText(transaction.description);
             tags.setText(transaction.tags);
             DateTime time = new DateTime(transaction.date);
-            date.setText(dateFormat.print(time));
+            date.setText(DateTimeUtil.toString(time));
         }
         setIntent(null);
     }

@@ -10,7 +10,9 @@
     <string name="edit_sender_hint">sender id to filter</string>
     <string name="button_refresh">refresh</string>
     <string name="pref_sender">Sender ID</string>
+    <string name="pref_highlight_cash">Highlight cash withdrawal</string>
     <string name="pref_sender_summ">Sender ID to filter</string>
+    <string name="pref_highlight_cash_summ">Highlight cash withdrawal transactions in the list</string>
     <string name="pref_clear_data">Clear data</string>
     <string name="pref_clear_data_summ">Clear all transaction and card data</string>
     <string name="title_activity_settings">Settings</string>

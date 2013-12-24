@@ -12,7 +12,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
     private static final long serialVersionUID = 392982765103974346L;
 
     public Transaction(DateTime date) {
-        this.date = date.toString();
+        this.date = date;
         this.id = date.getMillis() + new Date().getTime();
     }
 
@@ -26,7 +26,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
 
     public String recipient;
 
-    public String date;
+    public DateTime date;
 
     public long   id;
 

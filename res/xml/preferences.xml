@@ -10,5 +10,11 @@
     <kalpas.expensetracker.ClearAllPreference
         android:summary="@string/pref_clear_data_summ"
         android:title="@string/pref_clear_data" />
+    
+    <CheckBoxPreference 
+        android:defaultValue="true"
+        android:key="pref_highlight_cash"
+        android:title="@string/pref_highlight_cash"
+        android:summary="@string/pref_highlight_cash_summ"/>
 
 </PreferenceScreen>
