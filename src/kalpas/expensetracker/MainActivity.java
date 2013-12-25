@@ -24,7 +24,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnItemClickListener, OnItemLongClickListener,
@@ -39,6 +41,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     private ListView               listView;
     private TransactionListAdapter adapter;
     private List<Transaction>      transactionListSource;
+    private Spinner                spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +57,10 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         // instantiate core
         core = new Core(getApplicationContext());
         textView = (TextView) findViewById(R.id.TextViewMain);
+        spinner = (Spinner) findViewById(R.id.sort);
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(MainActivity.this);
         listView.setOnItemLongClickListener(MainActivity.this);
-
     }
 
     @Override
@@ -68,6 +71,11 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         transactionListSource = core.getTransactions(this);
         adapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
         listView.setAdapter(adapter);
+
+        ArrayAdapter<CharSequence> sortTypesAdpater = ArrayAdapter.createFromResource(this, R.array.spinner_sort_types,
+                android.R.layout.simple_spinner_item);
+        sortTypesAdpater.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(sortTypesAdpater);
 
         Intent intent = getIntent();
         String action = intent == null ? null : intent.getAction();

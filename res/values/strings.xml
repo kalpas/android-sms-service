@@ -32,4 +32,8 @@
     <string name="title_activity_edit_transaction">EditTransactionActivity</string>
     <string name="title_activity_add_transaction">Specify transaction details</string>
 
+    <string-array name="spinner_sort_types">
+        <item>date</item>
+    </string-array>
+
 </resources>

@@ -115,8 +115,8 @@ public class Core {
     public String getAccountSummary(Context context) {
         Card card = cardDao.load(DEFAULT_CARD, context);
         StringBuilder builder = new StringBuilder();
-        builder.append("available: " + card.left + "\n");
-        builder.append("spent: " + card.spent + "\n");
+        builder.append(String.format("available: %.2f%n", card.left));
+        builder.append(String.format("spent: %.2f%n", card.spent));
         return builder.toString();
     }
 

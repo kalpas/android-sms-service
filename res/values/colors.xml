@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark_blue">#002244</color>
+    <color name="cash_highlight">#444444</color>
 </resources>

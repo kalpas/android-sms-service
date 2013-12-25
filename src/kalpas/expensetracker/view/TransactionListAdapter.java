@@ -1,5 +1,7 @@
 package kalpas.expensetracker.view;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import kalpas.expensetracker.R;
@@ -21,12 +23,17 @@ import android.widget.TextView;
 
 public class TransactionListAdapter extends ArrayAdapter<Transaction> implements OnSharedPreferenceChangeListener {
 
+    public enum SortTypes {
+        date;
+    }
+
     private static final String     KEY_PREF_HIGHLIGHT_CASH = "pref_highlight_cash";
 
     private final Context           context;
     private final List<Transaction> items;
     private final int               resource;
     private Boolean                 highlight;
+    private SortTypes               sort;
 
     public TransactionListAdapter(Context context, int resource, List<Transaction> objects) {
         super(context, resource, objects);
@@ -70,12 +77,28 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
             }
 
             if (highlight && tx.tags.contains("cash")) {
-                itemView.setBackgroundColor(context.getResources().getColor(R.color.dark_blue));
+                itemView.setBackgroundColor(context.getResources().getColor(R.color.cash_highlight));
             }
 
         }
 
         return itemView;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        Collections.sort(items, new Comparator<Transaction>() {
+            @Override
+            public int compare(Transaction lhs, Transaction rhs) {
+                switch (sort) {
+                case date:
+                    return lhs.date.compareTo(rhs.date);
+                default:
+                    return lhs.compareTo(rhs);
+                }
+            }
+        });
+        super.notifyDataSetChanged();
     }
 
     @Override
