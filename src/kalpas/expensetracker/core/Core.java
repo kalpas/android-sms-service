@@ -2,9 +2,11 @@ package kalpas.expensetracker.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import kalpas.sms.parse.PumbTransaction;
@@ -14,10 +16,14 @@ import org.apache.commons.lang3.StringUtils;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.common.base.Functions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedMap_CustomFieldSerializer;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multisets;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.SortedMultiset;
 import com.google.common.collect.TreeMultiset;
 
@@ -151,13 +157,29 @@ public class Core {
         StringBuilder text = new StringBuilder();
 
         SortedMultiset<String> tags = TreeMultiset.create();
+        Map<String, Double> amounts = new HashMap<String, Double>();
         Splitter splitter = Splitter.on(",").trimResults();
 
+        String mainTag;
+        Double grandTotal = 0.;
         for (Transaction tx : trxs) {
             if (!StringUtils.isEmpty(tx.tags)) {
                 Iterable<String> tagList = splitter.split(tx.tags);
-                
                 Iterables.addAll(tags, tagList);
+                mainTag = tagList.iterator().next();
+
+            } else {
+                mainTag = "no tag";
+                tags.add(mainTag);
+            }
+
+            Double value = amounts.get(mainTag);
+            grandTotal += Math.abs(tx.amount);
+            if (value == null) {
+                amounts.put(mainTag, Math.abs(tx.amount));
+            } else {
+                value += Math.abs(tx.amount);
+                amounts.put(mainTag, value);
             }
         }
 
@@ -166,6 +188,17 @@ public class Core {
             String element = iterator.next();
             text.append(element);
             text.append(" (" + tags.count(element) + ")\n");
+        }
+
+        text.append("\n");
+
+        Ordering<String> valueComparator = Ordering.natural().onResultOf(Functions.forMap(amounts))
+                .compound(Ordering.natural());
+        Map<String, Double> sortedAmounts = ImmutableSortedMap.copyOf(amounts, valueComparator);
+
+        for (Map.Entry<String, Double> entry : sortedAmounts.entrySet()) {
+            text.append(String.format("%s: %.2f (%.2f%%)%n", entry.getKey(), entry.getValue(),
+                    (entry.getValue() / grandTotal)*100));
         }
 
         return text.toString();
