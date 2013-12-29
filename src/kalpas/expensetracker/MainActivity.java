@@ -68,8 +68,8 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     protected void onStart() {
         super.onStart();
 
-        textView.setText(core.getAccountSummary(this));
-        transactionListSource = core.getTransactions(this);
+        textView.setText(core.getAccountSummary());
+        transactionListSource = core.getTransactions();
         trxListAdapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
         trxListAdapter.sort(TransactionListAdapter.SORT_TYPE_DATE_ASC);
         listView.setAdapter(trxListAdapter);
@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         String action = intent == null ? null : intent.getAction();
         if (action != null) {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
-                core.clearData(this);
+                core.clearData();
                 refresh(null);
             }
         }
@@ -151,9 +151,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     }
 
     private void refresh() {
-        textView.setText(core.getAccountSummary(this));
+        textView.setText(core.getAccountSummary());
         trxListAdapter.clear();
-        trxListAdapter.addAll(core.getTransactions(this));
+        trxListAdapter.addAll(core.getTransactions());
         trxListAdapter.sort((String) sortType.getSelectedItem());
         trxListAdapter.notifyDataSetChanged();
     }

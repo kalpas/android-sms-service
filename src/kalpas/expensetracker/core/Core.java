@@ -19,7 +19,6 @@ import android.util.Log;
 import com.google.common.base.Functions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.ImmutableSortedMap_CustomFieldSerializer;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multisets;
@@ -34,70 +33,48 @@ public class Core {
 
     private CardDAO             cardDao         = new CardDAO();
     private TransactionsDAO     transactionsDao = new TransactionsDAO();
+    private Context             context;
 
     public Core(Context context) {
-        initCards(context);
+        this.context = context;
+        initCards();
     }
 
-    private void initCards(Context context) {
-        Card card = null;
-        Set<Transaction> trxSet = null;
-        card = cardDao.load(DEFAULT_CARD, context);
-        if (card == null) {
-            card = new Card();
-            card.id = DEFAULT_CARD;
-            cardDao.save(card, context);
-        }
-
-        trxSet = transactionsDao.load(context);
-        if (trxSet == null) {
-            trxSet = new HashSet<Transaction>();
-            transactionsDao.save(trxSet, context);
-        }
+    public void addTransaction(Transaction transaction) {
+        Set<Transaction> transactions = transactionsDao.load(context);
+        transactions.add(transaction);
+        transactionsDao.save(transactions, context);
     }
 
-    public Transaction processTransaction(PumbTransaction pumbTran, Context context) {
-        Transaction tran = null;
+    public void clearData() {
+        cardDao.delete(DEFAULT_CARD, context);
+        transactionsDao.deleteAll(context);
+        initCards();
+    }
 
-        switch (pumbTran.type) {
-        case BLOCKED:
-        case DEBITED:
-            tran = processBlocked(pumbTran, context);
-            break;
-        case CREDITED:
-            tran = processDebited(pumbTran, context);
-            break;
-        default:
-            Log.e(TAG, "no handler for transaction type " + pumbTran.type);
-            break;
-        }
-
-        return tran;
-
+    public String getAccountSummary() {
+        Card card = cardDao.load(DEFAULT_CARD, context);
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("available: %.2f%n", card.left));
+        builder.append(String.format("spent: %.2f%n", card.spent));
+        return builder.toString();
     }
 
     public String getCardId(PumbTransaction pumbTransaction) {
         return "default";// FIXME
     }
 
-    public void addTransaction(Transaction transaction, Context context) {
-        Set<Transaction> transactions = transactionsDao.load(context);
-        transactions.add(transaction);
-        transactionsDao.save(transactions, context);
-    }
+    public String getStats() {
+        StringBuilder text = new StringBuilder();
 
-    public void removeTransaction(Transaction trx, Context context) {
-        Set<Transaction> transactions = transactionsDao.load(context);
-        transactions.remove(trx);
-        transactionsDao.save(transactions, context);
+        Set<Transaction> trxs = transactionsDao.load(context);
 
-    }
+        text.append(getATMStats(trxs));// ATM stats
+        text.append("_____________\n");
 
-    public void updateTransactionDetails(Transaction transaction, Context context) {
-        Set<Transaction> transactions = transactionsDao.load(context);
-        transactions.remove(transaction);
-        transactions.add(transaction);
-        transactionsDao.save(transactions, context);
+        text.append(getTagStats(trxs));// tags
+
+        return text.toString();
     }
 
     @Deprecated
@@ -120,17 +97,44 @@ public class Core {
         return builder.toString();
     }
 
-    public String getStats(Context context) {
-        StringBuilder text = new StringBuilder();
+    public List<Transaction> getTransactions() {
+        Set<Transaction> set = transactionsDao.load(context);
+        ArrayList<Transaction> txs = Lists.newArrayList(set);
+        return txs;
+    }
 
-        Set<Transaction> trxs = transactionsDao.load(context);
+    public Transaction processTransaction(PumbTransaction pumbTran) {
+        Transaction tran = null;
 
-        text.append(getATMStats(trxs));// ATM stats
-        text.append("_____________\n");
+        switch (pumbTran.type) {
+        case BLOCKED:
+        case DEBITED:
+            tran = processBlocked(pumbTran);
+            break;
+        case CREDITED:
+            tran = processDebited(pumbTran);
+            break;
+        default:
+            Log.e(TAG, "no handler for transaction type " + pumbTran.type);
+            break;
+        }
 
-        text.append(getTagStats(trxs));// tags
+        return tran;
 
-        return text.toString();
+    }
+
+    public void removeTransaction(Transaction trx) {
+        Set<Transaction> transactions = transactionsDao.load(context);
+        transactions.remove(trx);
+        transactionsDao.save(transactions, context);
+
+    }
+
+    public void updateTransactionDetails(Transaction transaction) {
+        Set<Transaction> transactions = transactionsDao.load(context);
+        transactions.remove(transaction);
+        transactions.add(transaction);
+        transactionsDao.save(transactions, context);
     }
 
     private String getATMStats(Collection<Transaction> trxs) {
@@ -163,6 +167,10 @@ public class Core {
         String mainTag;
         Double grandTotal = 0.;
         for (Transaction tx : trxs) {
+            if (tx.amount >= 0) {
+                continue;// skip incoming transactions
+            }
+
             if (!StringUtils.isEmpty(tx.tags)) {
                 Iterable<String> tagList = splitter.split(tx.tags);
                 Iterables.addAll(tags, tagList);
@@ -192,49 +200,39 @@ public class Core {
 
         text.append("\n");
 
-        Ordering<String> valueComparator = Ordering.natural().onResultOf(Functions.forMap(amounts))
+        Ordering<String> valueComparator = Ordering.natural().reverse().onResultOf(Functions.forMap(amounts))
                 .compound(Ordering.natural());
         Map<String, Double> sortedAmounts = ImmutableSortedMap.copyOf(amounts, valueComparator);
 
+        Card card = cardDao.load(DEFAULT_CARD, context);
+        text.append(String.format("total spent: %0.2f%n" + "while actually spent %0.2f%n", grandTotal, card.spent));
         for (Map.Entry<String, Double> entry : sortedAmounts.entrySet()) {
             text.append(String.format("%s: %.2f (%.2f%%)%n", entry.getKey(), entry.getValue(),
-                    (entry.getValue() / grandTotal)*100));
+                    (entry.getValue() / grandTotal) * 100));
         }
 
         return text.toString();
 
     }
 
-    public List<Transaction> getTransactions(Context context) {
-        Set<Transaction> set = transactionsDao.load(context);
-        ArrayList<Transaction> txs = Lists.newArrayList(set);
-        return txs;
+    private void initCards() {
+        Card card = null;
+        Set<Transaction> trxSet = null;
+        card = cardDao.load(DEFAULT_CARD, context);
+        if (card == null) {
+            card = new Card();
+            card.id = DEFAULT_CARD;
+            cardDao.save(card, context);
+        }
+
+        trxSet = transactionsDao.load(context);
+        if (trxSet == null) {
+            trxSet = new HashSet<Transaction>();
+            transactionsDao.save(trxSet, context);
+        }
     }
 
-    public String getAccountSummary(Context context) {
-        Card card = cardDao.load(DEFAULT_CARD, context);
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("available: %.2f%n", card.left));
-        builder.append(String.format("spent: %.2f%n", card.spent));
-        return builder.toString();
-    }
-
-    private Transaction processDebited(PumbTransaction pumbTran, Context context) {
-        Card card = cardDao.load(DEFAULT_CARD, context);
-        card.left = pumbTran.remainingAvailable;
-        cardDao.save(card, context);
-
-        double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
-        Set<Transaction> transactions = transactionsDao.load(context);
-        Transaction tran = new Transaction(pumbTran.date);
-        tran.amount = amount;
-        tran.recipient = pumbTran.recipient;
-        transactions.add(tran);
-        transactionsDao.save(transactions, context);
-        return tran;
-    }
-
-    private Transaction processBlocked(PumbTransaction pumbTran, Context context) {
+    private Transaction processBlocked(PumbTransaction pumbTran) {
         Card card = cardDao.load(DEFAULT_CARD, context);
         card.left = pumbTran.remainingAvailable;
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
@@ -250,9 +248,18 @@ public class Core {
         return tran;
     }
 
-    public void clearData(Context context) {
-        cardDao.delete(DEFAULT_CARD, context);
-        transactionsDao.deleteAll(context);
-        initCards(context);
+    private Transaction processDebited(PumbTransaction pumbTran) {
+        Card card = cardDao.load(DEFAULT_CARD, context);
+        card.left = pumbTran.remainingAvailable;
+        cardDao.save(card, context);
+
+        double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
+        Set<Transaction> transactions = transactionsDao.load(context);
+        Transaction tran = new Transaction(pumbTran.date);
+        tran.amount = amount;
+        tran.recipient = pumbTran.recipient;
+        transactions.add(tran);
+        transactionsDao.save(transactions, context);
+        return tran;
     }
 }

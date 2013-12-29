@@ -30,7 +30,7 @@ public class SummaryActivity extends Activity {
         stats = (TextView) findViewById(R.id.stats);
 
         Core core = new Core(SummaryActivity.this);
-        stats.setText(core.getStats(SummaryActivity.this));
+        stats.setText(core.getStats());
 
     }
 

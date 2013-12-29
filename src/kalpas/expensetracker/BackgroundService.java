@@ -55,7 +55,7 @@ public class BackgroundService extends Service {
                     if (storage.isAvailable()) {
                         storage.appendText(getApplicationContext(), "#" + msgBody + "\n");
                         PumbTransaction pumbTx = pumb.parsePumbSms(msgBody);
-                        Transaction tx = core.processTransaction(pumbTx, getApplicationContext());
+                        Transaction tx = core.processTransaction(pumbTx);
                         sendEdit(tx);
                     } else {
                         Toast.makeText(getApplicationContext(), "storage not available", Toast.LENGTH_SHORT).show();
@@ -63,13 +63,13 @@ public class BackgroundService extends Service {
                 }
             } else if (ACTION_UPDATE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
-                core.updateTransactionDetails(trx, this);
+                core.updateTransactionDetails(trx);
             }else if(ACTION_ADD.equals(action)){
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
-                core.addTransaction(trx, this);
+                core.addTransaction(trx);
             }else if(ACTION_REMOVE.equals(action)){
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
-                core.removeTransaction(trx, this);
+                core.removeTransaction(trx);
             }
             else {
                 Log.e(getClass().toString(), "no such action");
