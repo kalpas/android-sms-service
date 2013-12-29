@@ -33,7 +33,14 @@
     <string name="title_activity_add_transaction">Specify transaction details</string>
 
     <string-array name="spinner_sort_types">
-        <item>date</item>
+        <item>@string/date_asc</item>
+        <item>@string/date_desc</item>
+        <item>@string/amount_asc</item>
+        <item>@string/amount_desc</item>
     </string-array>
+    <string name="date_asc">date asc</string>
+    <string name="date_desc">date desc</string>
+    <string name="amount_asc">amount asc</string>
+    <string name="amount_desc">amount desc</string>
 
 </resources>

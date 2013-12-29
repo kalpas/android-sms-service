@@ -76,7 +76,6 @@ public class EditTransactionActivity extends Activity {
             DateTime time = new DateTime(transaction.date);
             date.setText(DateTimeUtil.toString(time));
         }
-        setIntent(null);
     }
 
     @Override
@@ -86,9 +85,10 @@ public class EditTransactionActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        setIntent(null);
         transaction = null;
+        super.onDestroy();
     }
 
     public void discard(View view) {

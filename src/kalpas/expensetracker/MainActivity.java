@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -39,15 +40,15 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
     private TextView               textView;
     private ListView               listView;
-    private TransactionListAdapter adapter;
+    private TransactionListAdapter trxListAdapter;
     private List<Transaction>      transactionListSource;
-    private Spinner                spinner;
+    private Spinner                sortType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // set layout
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_alternative);
+        setContentView(R.layout.activity_main);
 
         // init prefs
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -57,7 +58,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         // instantiate core
         core = new Core(getApplicationContext());
         textView = (TextView) findViewById(R.id.TextViewMain);
-        spinner = (Spinner) findViewById(R.id.sort);
+        sortType = (Spinner) findViewById(R.id.sort);
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(MainActivity.this);
         listView.setOnItemLongClickListener(MainActivity.this);
@@ -69,13 +70,15 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
         textView.setText(core.getAccountSummary(this));
         transactionListSource = core.getTransactions(this);
-        adapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
-        listView.setAdapter(adapter);
+        trxListAdapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
+        trxListAdapter.sort(TransactionListAdapter.SORT_TYPE_DATE_ASC);
+        listView.setAdapter(trxListAdapter);
 
         ArrayAdapter<CharSequence> sortTypesAdpater = ArrayAdapter.createFromResource(this, R.array.spinner_sort_types,
                 android.R.layout.simple_spinner_item);
         sortTypesAdpater.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(sortTypesAdpater);
+        sortType.setAdapter(sortTypesAdpater);
+        sortType.setOnItemSelectedListener(new SpinnerOnItemSelectedListener());
 
         Intent intent = getIntent();
         String action = intent == null ? null : intent.getAction();
@@ -149,9 +152,10 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
     private void refresh() {
         textView.setText(core.getAccountSummary(this));
-        adapter.clear();
-        adapter.addAll(core.getTransactions(this));
-        adapter.notifyDataSetChanged();
+        trxListAdapter.clear();
+        trxListAdapter.addAll(core.getTransactions(this));
+        trxListAdapter.sort((String) sortType.getSelectedItem());
+        trxListAdapter.notifyDataSetChanged();
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -163,14 +167,14 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        editTransaction(adapter.getItem(position));
+        editTransaction(trxListAdapter.getItem(position));
 
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         RemoveTransactionDialog dialog = new RemoveTransactionDialog();
-        dialog.transaction = adapter.getItem(position);
+        dialog.transaction = trxListAdapter.getItem(position);
         dialog.show(getFragmentManager(), "remove_transaction");
         return true;
     }
@@ -180,6 +184,20 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         if (dialog.transaction != null) {
             removeTransaction(dialog.transaction);
         }
+    }
+
+    private class SpinnerOnItemSelectedListener implements OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            String sortType = (String) parent.getItemAtPosition(pos);
+            trxListAdapter.sort(sortType);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+
     }
 
 }

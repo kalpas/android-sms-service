@@ -70,7 +70,7 @@
         android:layout_marginTop="4dp"
         android:fontFamily="sans-serif"
         android:hint="@string/description"
-        android:inputType="text" />
+        android:inputType="textMultiLine" />
 
     <EditText
         android:id="@+id/tags"
@@ -82,6 +82,6 @@
         android:layout_marginTop="4dp"
         android:fontFamily="sans-serif"
         android:hint="@string/tags"
-        android:inputType="text" />
+        android:inputType="textMultiLine" />
 
 </LinearLayout>

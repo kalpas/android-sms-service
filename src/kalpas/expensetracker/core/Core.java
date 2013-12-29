@@ -108,7 +108,6 @@ public class Core {
     public List<Transaction> getTransactions(Context context) {
         Set<Transaction> set = transactionsDao.load(context);
         ArrayList<Transaction> txs = Lists.newArrayList(set);
-        Collections.sort(txs);
         return txs;
     }
 

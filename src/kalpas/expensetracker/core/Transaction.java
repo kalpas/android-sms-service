@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.primitives.Longs;
 
-public class Transaction implements Serializable, Comparable<Transaction> {
+public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 392982765103974346L;
 
@@ -16,19 +16,19 @@ public class Transaction implements Serializable, Comparable<Transaction> {
         this.id = date.getMillis() + new Date().getTime();
     }
 
-    public String cardId = "default";
+    public String   cardId = "default";
 
-    public Double amount;
+    public Double   amount;
 
-    public String description;
+    public String   description;
 
-    public String tags;
+    public String   tags;
 
-    public String recipient;
+    public String   recipient;
 
     public DateTime date;
 
-    public long   id;
+    public long     id;
 
     @Override
     public int hashCode() {
@@ -56,10 +56,4 @@ public class Transaction implements Serializable, Comparable<Transaction> {
     public String toString() {
         return amount + " " + (description == null ? recipient : description) + "\n";
     }
-
-    @Override
-    public int compareTo(Transaction another) {
-        return Longs.compare(this.id, another.id);
-    }
-
 }

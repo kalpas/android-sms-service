@@ -1,6 +1,5 @@
 package kalpas.expensetracker.view;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -10,6 +9,9 @@ import kalpas.expensetracker.view.utils.DateTimeUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Longs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,9 +25,10 @@ import android.widget.TextView;
 
 public class TransactionListAdapter extends ArrayAdapter<Transaction> implements OnSharedPreferenceChangeListener {
 
-    public enum SortTypes {
-        date;
-    }
+    public static final String      SORT_TYPE_DATE_ASC      = "date asc";
+    public static final String      SORT_TYPE_DATE_DESC     = "date desc";
+    public static final String      SORT_TYPE_AMOUNT_ASC    = "amount asc";
+    public static final String      SORT_TYPE_AMOUNT_DESC   = "amount desc";
 
     private static final String     KEY_PREF_HIGHLIGHT_CASH = "pref_highlight_cash";
 
@@ -33,7 +36,6 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
     private final List<Transaction> items;
     private final int               resource;
     private Boolean                 highlight;
-    private SortTypes               sort;
 
     public TransactionListAdapter(Context context, int resource, List<Transaction> objects) {
         super(context, resource, objects);
@@ -56,6 +58,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
             TextView description = (TextView) itemView.findViewById(R.id.description);
             TextView recipient = (TextView) itemView.findViewById(R.id.recipient);
             TextView date = (TextView) itemView.findViewById(R.id.date);
+            View colorLabel = itemView.findViewById(R.id.color_label);
 
             date.setText(DateTimeUtil.toString(new DateTime(tx.date)));
 
@@ -76,8 +79,13 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
                 recipient.setText(tx.recipient);
             }
 
-            if (highlight && tx.tags.contains("cash")) {
-                itemView.setBackgroundColor(context.getResources().getColor(R.color.cash_highlight));
+            if (highlight) {
+                if (tx.tags != null && tx.tags.contains("cash")) {
+                    colorLabel.setBackgroundColor(context.getResources().getColor(android.R.color.holo_green_light));
+                    itemView.setBackgroundColor(context.getResources().getColor(R.color.cash_highlight));
+                } else {
+                    colorLabel.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                }
             }
 
         }
@@ -85,20 +93,32 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
         return itemView;
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        Collections.sort(items, new Comparator<Transaction>() {
+    public void sort(String type) {
+        final String sortType = type;
+        super.sort(new Comparator<Transaction>() {
             @Override
             public int compare(Transaction lhs, Transaction rhs) {
-                switch (sort) {
-                case date:
-                    return lhs.date.compareTo(rhs.date);
-                default:
-                    return lhs.compareTo(rhs);
+                if (SORT_TYPE_DATE_ASC.equals(sortType)) {
+                    return compareByDate(lhs, rhs);
+                } else if (SORT_TYPE_DATE_DESC.equals(sortType)) {
+                    return compareByDate(rhs, lhs);
+                } else if (SORT_TYPE_AMOUNT_ASC.equals(sortType)) {
+                    return Doubles.compare(Math.abs(lhs.amount), Math.abs(rhs.amount));
+                } else if (SORT_TYPE_AMOUNT_DESC.equals(sortType)) {
+                    return Doubles.compare(Math.abs(rhs.amount), Math.abs(lhs.amount));
+                } else {
+                    return 0;
                 }
             }
+
+            private int compareByDate(Transaction lhs, Transaction rhs) {
+                int result = lhs.date.compareTo(rhs.date);
+                if (result == 0) {
+                    result = Longs.compare(lhs.id, rhs.id);
+                }
+                return result;
+            }
         });
-        super.notifyDataSetChanged();
     }
 
     @Override

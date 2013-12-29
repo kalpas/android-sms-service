@@ -57,15 +57,14 @@ public class AddTransactionActivity extends Activity {
             description.setText(originalTransaction.description);
             tags.setText(originalTransaction.tags);
         }
-
-        setIntent(null);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
         action = null;
         originalTransaction = null;
+        setIntent(null);
+        super.onDestroy();
     }
 
     public void discard(View view) {
