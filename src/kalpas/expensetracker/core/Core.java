@@ -1,16 +1,25 @@
 package kalpas.expensetracker.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import kalpas.sms.parse.PumbTransaction;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.util.Log;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multisets;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 
 public class Core {
 
@@ -103,6 +112,64 @@ public class Core {
             }
         }
         return builder.toString();
+    }
+
+    public String getStats(Context context) {
+        StringBuilder text = new StringBuilder();
+
+        Set<Transaction> trxs = transactionsDao.load(context);
+
+        text.append(getATMStats(trxs));// ATM stats
+        text.append("_____________\n");
+
+        text.append(getTagStats(trxs));// tags
+
+        return text.toString();
+    }
+
+    private String getATMStats(Collection<Transaction> trxs) {
+        StringBuilder text = new StringBuilder();
+
+        SortedMultiset<String> atms = TreeMultiset.create();
+        for (Transaction tx : trxs) {
+            if (!StringUtils.isEmpty(tx.recipient)) {
+                atms.add(tx.recipient);
+            }
+        }
+
+        Iterator<String> iterator = Multisets.copyHighestCountFirst(atms).elementSet().iterator();
+        while (iterator.hasNext()) {
+            String element = iterator.next();
+            text.append(element);
+            text.append(" (" + atms.count(element) + ")\n");
+        }
+
+        return text.toString();
+    }
+
+    private String getTagStats(Collection<Transaction> trxs) {
+        StringBuilder text = new StringBuilder();
+
+        SortedMultiset<String> tags = TreeMultiset.create();
+        Splitter splitter = Splitter.on(",").trimResults();
+
+        for (Transaction tx : trxs) {
+            if (!StringUtils.isEmpty(tx.tags)) {
+                Iterable<String> tagList = splitter.split(tx.tags);
+                
+                Iterables.addAll(tags, tagList);
+            }
+        }
+
+        Iterator<String> iterator = Multisets.copyHighestCountFirst(tags).elementSet().iterator();
+        while (iterator.hasNext()) {
+            String element = iterator.next();
+            text.append(element);
+            text.append(" (" + tags.count(element) + ")\n");
+        }
+
+        return text.toString();
+
     }
 
     public List<Transaction> getTransactions(Context context) {
