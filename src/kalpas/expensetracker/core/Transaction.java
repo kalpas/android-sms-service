@@ -5,8 +5,6 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
-import com.google.common.primitives.Longs;
-
 public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 392982765103974346L;

@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnItemClickListener, OnItemLongClickListener,
         RemoveTransactionListener {
 
+    public static final String    KEY_PREF_SORT    = "pref_sort";
     public static final String     TAG              = "kalpas.expensetracker";
     public static final String     KEY_PREFS_SENDER = "pref_sender";
 
@@ -72,7 +74,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         textView.setText(core.getAccountSummary());
         transactionListSource = core.getTransactions();
         trxListAdapter = new TransactionListAdapter(this, R.layout.list_item, transactionListSource);
-        trxListAdapter.sort(TransactionListAdapter.SORT_TYPE_DATE_ASC);
+        String sort = PreferenceManager.getDefaultSharedPreferences(this).getString(KEY_PREF_SORT,
+                TransactionListAdapter.SORT_TYPE_DATE_DESC);
+        trxListAdapter.sort(sort);
         listView.setAdapter(trxListAdapter);
 
         ArrayAdapter<CharSequence> sortTypesAdpater = ArrayAdapter.createFromResource(this, R.array.spinner_sort_types,
@@ -80,6 +84,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         sortTypesAdpater.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortType.setAdapter(sortTypesAdpater);
         sortType.setOnItemSelectedListener(new SpinnerOnItemSelectedListener());
+        sortType.setSelection(sortTypesAdpater.getPosition(sort));
 
         Intent intent = getIntent();
         String action = intent == null ? null : intent.getAction();
@@ -192,6 +197,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
             String sortType = (String) parent.getItemAtPosition(pos);
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+            editor.putString(KEY_PREF_SORT, sortType);
+            editor.commit();
             trxListAdapter.sort(sortType);
         }
 

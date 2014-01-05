@@ -1,14 +1,14 @@
 package kalpas.expensetracker.view;
 
+import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.dateTimeMid;
+
 import java.util.Comparator;
 import java.util.List;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
-import kalpas.expensetracker.view.utils.DateTimeUtil;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -58,7 +58,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             TextView date = (TextView) itemView.findViewById(R.id.date);
             View colorLabel = itemView.findViewById(R.id.color_label);
 
-            date.setText(DateTimeUtil.toString(new DateTime(tx.date)));
+            date.setText(dateTimeMid.print(tx.date));
 
             String txAmountString = tx.amount.toString();
             if (tx.amount > 0) {

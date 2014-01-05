@@ -1,7 +1,7 @@
 package kalpas.expensetracker.view.transaction.edit;
 
-import static kalpas.expensetracker.view.utils.DateTimeUtil.dateFormatMid;
-import static kalpas.expensetracker.view.utils.DateTimeUtil.timeFormatMid;
+import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.dateFormatMid;
+import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.timeFormatMid;
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;

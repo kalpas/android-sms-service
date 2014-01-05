@@ -55,7 +55,8 @@ public class Core {
     public String getAccountSummary() {
         Card card = cardDao.load(DEFAULT_CARD, context);
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("available: %.2f%n", card.left));
+        builder.append(String.format("available on card: %.2f%n", card.left));
+        builder.append(String.format("available cash: %.2f%n", card.cashLeft));
         builder.append(String.format("spent: %.2f%n", card.spent));
         return builder.toString();
     }
@@ -77,26 +78,6 @@ public class Core {
         return text.toString();
     }
 
-    @Deprecated
-    public String getSummary(Context context) {
-        Card card = cardDao.load(DEFAULT_CARD, context);
-        StringBuilder builder = new StringBuilder();
-        builder.append("available: " + card.left + "\n");
-        builder.append("spent: " + card.spent + "\n");
-
-        Set<Transaction> set = transactionsDao.load(context);
-        builder.append("\nTransactions\n");
-        for (Transaction tran : set) {
-            builder.append(tran.amount + " ");
-            if (tran.description != null) {
-                builder.append(tran.description + "\n");
-            } else {
-                builder.append(tran.recipient + "\n");
-            }
-        }
-        return builder.toString();
-    }
-
     public List<Transaction> getTransactions() {
         Set<Transaction> set = transactionsDao.load(context);
         ArrayList<Transaction> txs = Lists.newArrayList(set);
@@ -106,7 +87,11 @@ public class Core {
     public Transaction processTransaction(PumbTransaction pumbTran) {
         Transaction tran = null;
 
-        // TODO rollback
+        // FIXME rollback
+        // if(pumbTran.rolledBack){
+        // return tran;
+        // }
+        
 
         switch (pumbTran.type) {
         case BLOCKED:
@@ -236,12 +221,21 @@ public class Core {
 
     private Transaction processBlocked(PumbTransaction pumbTran) {
         Card card = cardDao.load(DEFAULT_CARD, context);
-        card.left = pumbTran.remainingAvailable;
+        Set<Transaction> transactions = transactionsDao.load(context);
+        
+        //TODO
+//        for(Transaction item: transactions){
+//            if(item.date.equals(pumbTran.date) &&  item.amount.equals(pumbTran.amount)){
+//                transactions.remove(item);
+//                break;
+//            }
+//        }
+        
+        card.left = pumbTran.remainingAvailable == null ? pumbTran.remaining : pumbTran.remainingAvailable;
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
         card.spent += amount;
         cardDao.save(card, context);
 
-        Set<Transaction> transactions = transactionsDao.load(context);
         Transaction tran = new Transaction(pumbTran.date);
         tran.amount = -amount;
         tran.recipient = pumbTran.recipient;
