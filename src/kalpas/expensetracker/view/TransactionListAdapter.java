@@ -10,12 +10,7 @@ import kalpas.expensetracker.view.utils.DateTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Longs;
-
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +18,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class TransactionListAdapter extends ArrayAdapter<Transaction> implements OnSharedPreferenceChangeListener {
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Longs;
+
+public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
     public static final String      SORT_TYPE_DATE_ASC      = "date asc";
     public static final String      SORT_TYPE_DATE_DESC     = "date desc";
@@ -120,14 +118,4 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> implements
             }
         });
     }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(KEY_PREF_HIGHLIGHT_CASH)) {
-            highlight = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getBoolean(KEY_PREF_HIGHLIGHT_CASH, true);
-        }
-
-    }
-
 }

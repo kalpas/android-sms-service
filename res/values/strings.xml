@@ -31,6 +31,8 @@
     <string name="title_activity_summary">Transactions summary</string>
     <string name="title_activity_edit_transaction">EditTransactionActivity</string>
     <string name="title_activity_add_transaction">Specify transaction details</string>
+    <string name="pref_sms_locale_summ">Language of your PUMB sms messages</string>
+    <string name="pref_sms_locale">SMS locale</string>
 
     <string-array name="spinner_sort_types">
         <item>@string/date_asc</item>
@@ -38,9 +40,20 @@
         <item>@string/amount_asc</item>
         <item>@string/amount_desc</item>
     </string-array>
-    <string name="date_asc">date asc</string>
+
+    <string name="date_asc">date asc</string>
     <string name="date_desc">date desc</string>
     <string name="amount_asc">amount asc</string>
     <string name="amount_desc">amount desc</string>
+
+    <string-array name="sms_locales">
+        <item>@string/EN</item>
+        <item>@string/UA</item>
+        <item>@string/NONE</item>
+    </string-array>
+
+    <string name="EN">EN</string>
+    <string name="UA">UA</string>
+    <string name="NONE">NONE</string>
 
 </resources>

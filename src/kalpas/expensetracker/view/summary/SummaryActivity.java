@@ -2,6 +2,7 @@ package kalpas.expensetracker.view.summary;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Core;
+import kalpas.expensetracker.core.CoreFactory;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,7 +30,7 @@ public class SummaryActivity extends Activity {
         super.onStart();
         stats = (TextView) findViewById(R.id.stats);
 
-        Core core = new Core(SummaryActivity.this);
+        Core core = CoreFactory.getInstance(this);
         stats.setText(core.getStats());
 
     }

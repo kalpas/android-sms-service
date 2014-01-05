@@ -1,13 +1,17 @@
 package kalpas.expensetracker.view.transaction.edit;
 
+import static kalpas.expensetracker.view.utils.DateTimeUtil.dateFormatMid;
+import static kalpas.expensetracker.view.utils.DateTimeUtil.timeFormatMid;
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.view.datetime.DatePickerFragment;
+import kalpas.expensetracker.view.datetime.TimePickerFragment;
 import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
-import kalpas.expensetracker.view.utils.DateTimeUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,19 +21,23 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class EditTransactionActivity extends Activity {
+public class EditTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
+        DatePickerFragment.DateSetListener {
 
     public static final String ACTION_EDIT       = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
     public static final String ACTION_SAVE_SPLIT = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SAVE_SPLIT";
+
+    private TextView           date;
+    private TextView           time;
 
     private EditText           amount;
     private EditText           description;
     private EditText           tags;
     private TextView           recipient;
-    private TextView           date;
     private LinearLayout       parent;
 
     private Transaction        transaction;
+    private DateTime           dateTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,7 @@ public class EditTransactionActivity extends Activity {
         tags = (EditText) findViewById(R.id.tags);
         recipient = (TextView) findViewById(R.id.recipient);
         date = (TextView) findViewById(R.id.date);
+        time = (TextView) findViewById(R.id.time);
     }
 
     @Override
@@ -73,9 +82,10 @@ public class EditTransactionActivity extends Activity {
             amount.setText(transaction.amount.toString());
             description.setText(transaction.description);
             tags.setText(transaction.tags);
-            DateTime time = new DateTime(transaction.date);
-            date.setText(DateTimeUtil.toString(time));
+            dateTime=new DateTime(transaction.date);
         }
+
+        updateDateTime();
     }
 
     @Override
@@ -113,6 +123,7 @@ public class EditTransactionActivity extends Activity {
     }
 
     private void updateWithChanges() {
+        transaction.date = dateTime;
         transaction.amount = Double.valueOf(amount.getText().toString());
         transaction.description = description.getText().toString();
         transaction.tags = tags.getText().toString();
@@ -128,5 +139,41 @@ public class EditTransactionActivity extends Activity {
         splitIntent.setAction(AddTransactionActivity.ACTION_SPLIT);
         splitIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
         startActivity(splitIntent);
+    }
+
+    private void updateDateTime() {
+        date.setText(dateFormatMid.print(dateTime));
+        time.setText(timeFormatMid.print(dateTime));
+    }
+
+    @Override
+    public void onTimeSet(int hourOfDay, int minute) {
+        MutableDateTime newTime = dateTime.toMutableDateTime();
+        newTime.setHourOfDay(hourOfDay);
+        newTime.setMinuteOfHour(minute);
+        dateTime = newTime.toDateTime();
+        updateDateTime();
+    }
+
+    public void showTimePickerDialog(View v) {
+        TimePickerFragment newFragment = new TimePickerFragment();
+        newFragment.time = dateTime;
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    @Override
+    public void onDateSet(int year, int month, int day) {
+        MutableDateTime newDate = dateTime.toMutableDateTime();
+        newDate.setYear(year);
+        newDate.setMonthOfYear(month + 1);
+        newDate.setDayOfMonth(day);
+        dateTime = newDate.toDateTime();
+        updateDateTime();
+    }
+
+    public void showDatePickerDialog(View v) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        newFragment.date = dateTime;
+        newFragment.show(getFragmentManager(), "datePicker");
     }
 }

@@ -28,12 +28,12 @@ import com.google.common.collect.TreeMultiset;
 
 public class Core {
 
-    private static final String DEFAULT_CARD    = "default";
-    private static final String TAG             = "kalpas.expensetracker.core.Core";
+    private static final String   DEFAULT_CARD    = "default";
+    private static final String   TAG             = "kalpas.expensetracker.core.Core";
 
-    private CardDAO             cardDao         = new CardDAO();
-    private TransactionsDAO     transactionsDao = new TransactionsDAO();
-    private Context             context;
+    private final CardDAO         cardDao         = new CardDAO();
+    private final TransactionsDAO transactionsDao = new TransactionsDAO();
+    private final Context         context;
 
     public Core(Context context) {
         this.context = context;
@@ -105,6 +105,8 @@ public class Core {
 
     public Transaction processTransaction(PumbTransaction pumbTran) {
         Transaction tran = null;
+
+        // TODO rollback
 
         switch (pumbTran.type) {
         case BLOCKED:
@@ -205,7 +207,7 @@ public class Core {
         Map<String, Double> sortedAmounts = ImmutableSortedMap.copyOf(amounts, valueComparator);
 
         Card card = cardDao.load(DEFAULT_CARD, context);
-        text.append(String.format("total spent: %0.2f%n" + "while actually spent %0.2f%n", grandTotal, card.spent));
+        text.append(String.format("total spent: %.2f%n" + "while actually spent %.2f%n", grandTotal, card.spent));
         for (Map.Entry<String, Double> entry : sortedAmounts.entrySet()) {
             text.append(String.format("%s: %.2f (%.2f%%)%n", entry.getKey(), entry.getValue(),
                     (entry.getValue() / grandTotal) * 100));

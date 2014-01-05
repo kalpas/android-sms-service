@@ -3,6 +3,7 @@ package kalpas.expensetracker;
 import java.util.List;
 
 import kalpas.expensetracker.core.Core;
+import kalpas.expensetracker.core.CoreFactory;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
@@ -56,7 +57,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         registerReceiver(receiver, new IntentFilter(BackgroundService.CHANNEL));
 
         // instantiate core
-        core = new Core(getApplicationContext());
+        core = CoreFactory.getInstance(this);
         textView = (TextView) findViewById(R.id.TextViewMain);
         sortType = (Spinner) findViewById(R.id.sort);
         listView = (ListView) findViewById(R.id.list);

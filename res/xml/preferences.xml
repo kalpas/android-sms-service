@@ -7,14 +7,23 @@
         android:summary="@string/pref_sender_summ"
         android:title="@string/pref_sender" />
 
+    <ListPreference
+        android:defaultValue="@string/NONE"
+        android:dialogTitle="@string/pref_sms_locale"
+        android:entries="@array/sms_locales"
+        android:entryValues="@array/sms_locales"
+        android:key="pref_sms_locale"
+        android:summary="@string/pref_sms_locale_summ"
+        android:title="@string/pref_sms_locale" />
+
     <kalpas.expensetracker.ClearAllPreference
         android:summary="@string/pref_clear_data_summ"
         android:title="@string/pref_clear_data" />
-    
-    <CheckBoxPreference 
+
+    <CheckBoxPreference
         android:defaultValue="true"
         android:key="pref_highlight_cash"
-        android:title="@string/pref_highlight_cash"
-        android:summary="@string/pref_highlight_cash_summ"/>
+        android:summary="@string/pref_highlight_cash_summ"
+        android:title="@string/pref_highlight_cash" />
 
 </PreferenceScreen>
