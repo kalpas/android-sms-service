@@ -65,7 +65,7 @@ public class Core {
             if (trx.amount > 0) {
                 incomeGrandTotal += trx.amount;
             } else if(!StringUtils.isEmpty(trx.tags) && trx.tags.contains("cash")){
-                cashWithdrawed+=trx.amount;
+                cashWithdrawed += Math.abs(trx.amount);
             }else{
                 spentGrandTotal += Math.abs(trx.amount);
             }
