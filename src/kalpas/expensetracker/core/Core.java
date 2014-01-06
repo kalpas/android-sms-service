@@ -28,16 +28,16 @@ import com.google.common.collect.TreeMultiset;
 
 public class Core {
 
-    private static final String   DEFAULT_CARD    = "default";
+    private static final String   DEFAULT_ACCOUNT    = "default";
     private static final String   TAG             = "kalpas.expensetracker.core.Core";
 
-    private final CardDAO         cardDao         = new CardDAO();
+    private final AccountDAO         accountDao         = new AccountDAO();
     private final TransactionsDAO transactionsDao = new TransactionsDAO();
     private final Context         context;
 
     public Core(Context context) {
         this.context = context;
-        initCards();
+        initAccounts();
     }
 
     public void addTransaction(Transaction transaction) {
@@ -47,21 +47,21 @@ public class Core {
     }
 
     public void clearData() {
-        cardDao.delete(DEFAULT_CARD, context);
+        accountDao.delete(DEFAULT_ACCOUNT, context);
         transactionsDao.deleteAll(context);
-        initCards();
+        initAccounts();
     }
 
     public String getAccountSummary() {
-        Card card = cardDao.load(DEFAULT_CARD, context);
+        Account account = accountDao.load(DEFAULT_ACCOUNT, context);
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("available on card: %.2f%n", card.left));
-        builder.append(String.format("available cash: %.2f%n", card.cashLeft));
-        builder.append(String.format("spent: %.2f%n", card.spent));
+        builder.append(String.format("available on card: %.2f%n", account.left));
+        builder.append(String.format("available cash: %.2f%n", account.cashLeft));
+        builder.append(String.format("spent: %.2f%n", account.spent));
         return builder.toString();
     }
 
-    public String getCardId(PumbTransaction pumbTransaction) {
+    public String getAccountId(PumbTransaction pumbTransaction) {
         return "default";// FIXME
     }
 
@@ -85,14 +85,11 @@ public class Core {
     }
 
     public Transaction processTransaction(PumbTransaction pumbTran) {
+        if (pumbTran == null || (pumbTran != null && pumbTran.rolledBack)) {
+            return null;
+        }
+
         Transaction tran = null;
-
-        // FIXME rollback
-        // if(pumbTran.rolledBack){
-        // return tran;
-        // }
-        
-
         switch (pumbTran.type) {
         case BLOCKED:
         case DEBITED:
@@ -191,8 +188,8 @@ public class Core {
                 .compound(Ordering.natural());
         Map<String, Double> sortedAmounts = ImmutableSortedMap.copyOf(amounts, valueComparator);
 
-        Card card = cardDao.load(DEFAULT_CARD, context);
-        text.append(String.format("total spent: %.2f%n" + "while actually spent %.2f%n", grandTotal, card.spent));
+        Account account = accountDao.load(DEFAULT_ACCOUNT, context);
+        text.append(String.format("total spent: %.2f%n" + "while actually spent %.2f%n", grandTotal, account.spent));
         for (Map.Entry<String, Double> entry : sortedAmounts.entrySet()) {
             text.append(String.format("%s: %.2f (%.2f%%)%n", entry.getKey(), entry.getValue(),
                     (entry.getValue() / grandTotal) * 100));
@@ -202,14 +199,14 @@ public class Core {
 
     }
 
-    private void initCards() {
-        Card card = null;
+    private void initAccounts() {
+        Account account = null;
         Set<Transaction> trxSet = null;
-        card = cardDao.load(DEFAULT_CARD, context);
-        if (card == null) {
-            card = new Card();
-            card.id = DEFAULT_CARD;
-            cardDao.save(card, context);
+        account = accountDao.load(DEFAULT_ACCOUNT, context);
+        if (account == null) {
+            account = new Account();
+            account.id = DEFAULT_ACCOUNT;
+            accountDao.save(account, context);
         }
 
         trxSet = transactionsDao.load(context);
@@ -220,21 +217,21 @@ public class Core {
     }
 
     private Transaction processBlocked(PumbTransaction pumbTran) {
-        Card card = cardDao.load(DEFAULT_CARD, context);
+        Account account = accountDao.load(DEFAULT_ACCOUNT, context);
         Set<Transaction> transactions = transactionsDao.load(context);
-        
-        //TODO
-//        for(Transaction item: transactions){
-//            if(item.date.equals(pumbTran.date) &&  item.amount.equals(pumbTran.amount)){
-//                transactions.remove(item);
-//                break;
-//            }
-//        }
-        
-        card.left = pumbTran.remainingAvailable == null ? pumbTran.remaining : pumbTran.remainingAvailable;
+
+        // debit after hold. just replace with the latest
+        for (Transaction item : transactions) {
+            if (item.date.equals(pumbTran.date)) {
+                transactions.remove(item);
+                break;
+            }
+        }
+
+        account.left = pumbTran.remainingAvailable == null ? pumbTran.remaining : pumbTran.remainingAvailable;
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
-        card.spent += amount;
-        cardDao.save(card, context);
+        account.spent += amount;
+        accountDao.save(account, context);
 
         Transaction tran = new Transaction(pumbTran.date);
         tran.amount = -amount;
@@ -245,9 +242,9 @@ public class Core {
     }
 
     private Transaction processDebited(PumbTransaction pumbTran) {
-        Card card = cardDao.load(DEFAULT_CARD, context);
-        card.left = pumbTran.remainingAvailable;
-        cardDao.save(card, context);
+        Account account = accountDao.load(DEFAULT_ACCOUNT, context);
+        account.left = pumbTran.remainingAvailable;
+        accountDao.save(account, context);
 
         double amount = pumbTran.amountInAccountCurrency != null ? pumbTran.amountInAccountCurrency : pumbTran.amount;
         Set<Transaction> transactions = transactionsDao.load(context);

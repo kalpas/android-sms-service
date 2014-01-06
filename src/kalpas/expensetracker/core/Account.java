@@ -1,6 +1,6 @@
 package kalpas.expensetracker.core;
 
-public class Card {
+public class Account {
 
     public String id;
 

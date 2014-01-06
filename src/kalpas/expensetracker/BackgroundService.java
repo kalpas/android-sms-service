@@ -65,8 +65,8 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
                     if (storage.isAvailable()) {
                         storage.appendText(this, "#" + msgBody + "\n");
                         PumbTransaction pumbTx = parseMsg(msgBody);
-                        if (pumbTx != null) {
-                            Transaction tx = core.processTransaction(pumbTx);
+                        Transaction tx = core.processTransaction(pumbTx);
+                        if (tx != null) {
                             sendEdit(tx);
                         }
                     } else {
