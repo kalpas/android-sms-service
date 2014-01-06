@@ -71,19 +71,19 @@ public final class R {
         public static final int summary=0x7f0a0003;
     }
     public static final class string {
-        public static final int EN=0x7f070024;
-        public static final int NONE=0x7f070026;
-        public static final int UA=0x7f070025;
+        public static final int EN=0x7f070026;
+        public static final int NONE=0x7f070028;
+        public static final int UA=0x7f070027;
         public static final int action_add=0x7f070003;
         public static final int action_refresh=0x7f070002;
         public static final int action_settings=0x7f070001;
         public static final int amount=0x7f070015;
-        public static final int amount_asc=0x7f070022;
-        public static final int amount_desc=0x7f070023;
+        public static final int amount_asc=0x7f070024;
+        public static final int amount_desc=0x7f070025;
         public static final int app_name=0x7f070000;
         public static final int button_refresh=0x7f070007;
-        public static final int date_asc=0x7f070020;
-        public static final int date_desc=0x7f070021;
+        public static final int date_asc=0x7f070022;
+        public static final int date_desc=0x7f070023;
         public static final int description=0x7f070016;
         public static final int dialog_clear_all=0x7f070010;
         public static final int dialog_clear_all_message=0x7f07000f;
@@ -98,6 +98,8 @@ public final class R {
         public static final int pref_clear_data_summ=0x7f07000d;
         public static final int pref_highlight_cash=0x7f070009;
         public static final int pref_highlight_cash_summ=0x7f07000b;
+        public static final int pref_saldo=0x7f070021;
+        public static final int pref_saldo_summ=0x7f070020;
         public static final int pref_sender=0x7f070008;
         public static final int pref_sender_summ=0x7f07000a;
         public static final int pref_sms_locale=0x7f07001f;

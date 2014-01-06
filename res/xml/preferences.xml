@@ -25,5 +25,12 @@
         android:key="pref_highlight_cash"
         android:summary="@string/pref_highlight_cash_summ"
         android:title="@string/pref_highlight_cash" />
+    
+    <EditTextPreference
+        android:defaultValue="0"
+        android:inputType="number|numberSigned|numberDecimal"
+        android:key="pref_saldo"
+        android:summary="@string/pref_saldo_summ"
+        android:title="@string/pref_saldo" />
 
 </PreferenceScreen>

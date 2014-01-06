@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import android.content.Context;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -67,10 +67,10 @@ public class TransactionsDAO {
         gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter());
         gsonBuilder.registerTypeAdapter(Instant.class, new InstantTypeConverter());
-        gson= gsonBuilder.create();
+        gson = gsonBuilder.create();
     }
 
-    public void save(Set<Transaction> transactions, Context context) {
+    public void save(List<Transaction> transactions, Context context) {
         FileOutputStream fos = null;
         try {
             fos = context.openFileOutput(getFileName(), Context.MODE_PRIVATE);
@@ -83,14 +83,14 @@ public class TransactionsDAO {
         }
     }
 
-    public Set<Transaction> load(Context context) {
-        Set<Transaction> transactions = null;
+    public List<Transaction> load(Context context) {
+        List<Transaction> transactions = null;
         FileInputStream fis;
         try {
             fis = context.openFileInput(getFileName());
             Transaction[] fromJson = gson.fromJson(new InputStreamReader(fis), Transaction[].class);
             if (fromJson != null) {
-                transactions = Sets.newHashSet(fromJson);
+                transactions = Lists.newArrayList(fromJson);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
