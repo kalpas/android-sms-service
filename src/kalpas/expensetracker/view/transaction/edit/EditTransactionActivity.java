@@ -8,6 +8,7 @@ import java.util.List;
 
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
+import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.expensetracker.view.datetime.DatePickerFragment;
@@ -32,7 +33,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public class EditTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
         DatePickerFragment.DateSetListener {
@@ -119,7 +119,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
     private Button createOkButton() {
         Button okButton = new Button(this, null, android.R.attr.buttonBarButtonStyle);
-        okButton.setText(getResources().getString(android.R.string.ok));
+        okButton.setText(getResources().getString(R.string.done));
         okButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         okButton.setOnClickListener(new View.OnClickListener() {
 
@@ -178,12 +178,10 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     private void showInteractiveTagSelection() {
         hideTextEditControls();
 
-        List<String> tagList = Lists.newArrayList("food", "rent", "meds", "cash", "coffee", "gift", "clothes");
+        Tags tagProvider = new Tags();
+        List<String> tagList = tagProvider.getTags(this);
         int rows = Math.round((tagList.size() + 1) / 3);
         tagGrid.setRowCount(rows);
-
-        Button okButton = createOkButton();
-        tagGrid.addView(okButton);
 
         Button cashButton = createCashButton();
         tagGrid.addView(cashButton);
@@ -193,6 +191,9 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
             view = createTagButton(tag);
             tagGrid.addView(view);
         }
+
+        Button okButton = createOkButton();
+        tagGrid.addView(okButton);
     }
 
     private void showTextEditControls() {
@@ -250,6 +251,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
             if (StringUtils.isEmpty(transaction.tags)) {
                 showInteractiveTagSelection();
+            } else {
+                showTextEditControls();
             }
 
             if (ACTION_SAVE_SPLIT.equals(action)) {

@@ -73,19 +73,19 @@ public final class R {
         public static final int summary=0x7f0a0003;
     }
     public static final class string {
-        public static final int EN=0x7f070027;
-        public static final int NONE=0x7f070029;
-        public static final int UA=0x7f070028;
+        public static final int EN=0x7f070028;
+        public static final int NONE=0x7f07002a;
+        public static final int UA=0x7f070029;
         public static final int action_add=0x7f070003;
         public static final int action_refresh=0x7f070002;
         public static final int action_settings=0x7f070001;
         public static final int amount=0x7f070015;
-        public static final int amount_asc=0x7f070025;
-        public static final int amount_desc=0x7f070026;
+        public static final int amount_asc=0x7f070026;
+        public static final int amount_desc=0x7f070027;
         public static final int app_name=0x7f070000;
         public static final int button_refresh=0x7f070007;
-        public static final int date_asc=0x7f070023;
-        public static final int date_desc=0x7f070024;
+        public static final int date_asc=0x7f070024;
+        public static final int date_desc=0x7f070025;
         public static final int description=0x7f070016;
         public static final int dialog_clear_all=0x7f070010;
         public static final int dialog_clear_all_message=0x7f07000f;
@@ -93,6 +93,7 @@ public final class R {
         public static final int dialog_tran_edit_message=0x7f070011;
         public static final int dialog_tran_save_button=0x7f070012;
         public static final int dialog_tran_split_button=0x7f070014;
+        public static final int done=0x7f070023;
         public static final int edit_sender_hint=0x7f070006;
         public static final int enter_amount=0x7f070022;
         public static final int hello_world=0x7f070004;

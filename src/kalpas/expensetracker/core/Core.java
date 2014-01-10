@@ -61,7 +61,10 @@ public class Core {
         Double incomeGrandTotal = 0.;
         Double cashWithdrawed = 0.;
         Double cashLeft = 0.;
+        Tags tags =new Tags();//FIXME
         for (Transaction trx : transactions) {
+            //FIXME just for test
+            tags.addTags(trx.tags, context);
             if (trx.amount > 0) {
                 incomeGrandTotal += trx.amount;
             } else {
