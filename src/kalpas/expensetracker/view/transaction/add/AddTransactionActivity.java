@@ -18,26 +18,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class AddTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
         DatePickerFragment.DateSetListener {
 
-    
+    public static final String ACTION_SPLIT = "kalpas.expensetracker.view.transaction.add.AddTransactionActivity.ACTION_SPLIT";
 
-    public static final String             ACTION_SPLIT = "kalpas.expensetracker.view.transaction.add.AddTransactionActivity.ACTION_SPLIT";
+    private TextView           date;
+    private TextView           time;
+    private EditText           amount;
+    private EditText           description;
+    private EditText           tags;
+    private ToggleButton       sign;
 
-    private TextView                       date;
-    private TextView                       time;
-    private EditText                       amount;
-    private EditText                       description;
-    private EditText                       tags;
-    private ToggleButton                   sign;
+    private DateTime           dateTime;
 
-    private DateTime                       dateTime;
-
-    private String                         action;
-    private Transaction                    originalTransaction;
+    private String             action;
+    private Transaction        originalTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +91,12 @@ public class AddTransactionActivity extends Activity implements TimePickerFragme
 
         transaction = new Transaction(dateTime);
 
-        transaction.amount = Double.valueOf(amount.getText().toString());
+        try {
+            transaction.amount = Double.valueOf(amount.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, getResources().getString(R.string.enter_amount), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!sign.isChecked() && transaction.amount > 0) {
             transaction.amount = -transaction.amount;
         }

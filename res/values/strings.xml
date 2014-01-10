@@ -35,6 +35,7 @@
     <string name="pref_sms_locale">SMS locale</string>
     <string name="pref_saldo_summ">Saldo of the card account when the app was installed</string>
     <string name="pref_saldo">Saldo</string>
+    <string name="enter_amount">Please enter amount</string>
 
     <string-array name="spinner_sort_types">
         <item>@string/date_asc</item>

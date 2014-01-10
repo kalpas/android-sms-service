@@ -64,16 +64,20 @@ public class Core {
         for (Transaction trx : transactions) {
             if (trx.amount > 0) {
                 incomeGrandTotal += trx.amount;
-            } else if(!StringUtils.isEmpty(trx.tags) && trx.tags.contains("cash")){
-                cashWithdrawed += Math.abs(trx.amount);
-            }else{
+            } else {
                 spentGrandTotal += Math.abs(trx.amount);
+                if (!StringUtils.isEmpty(trx.tags) && trx.tags.contains("cash")) {
+                    cashWithdrawed += Math.abs(trx.amount);
+                }
             }
         }
-        cashLeft = incomeGrandTotal - spentGrandTotal - (account.left - saldo)+cashWithdrawed;
+        cashLeft = incomeGrandTotal - spentGrandTotal - (account.left - saldo) + cashWithdrawed;
 
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("on card: %.2f%n", account.left));
+        builder.append(String.format("delta: %.2f%n", incomeGrandTotal - spentGrandTotal));
+        builder.append(String.format("saldo: %.2f%n", saldo));
+        builder.append(String.format("cash withdrawed: %.2f%n", cashWithdrawed));
         builder.append(String.format("cash: %.2f%n", cashLeft));
         return builder.toString();
     }
@@ -246,6 +250,8 @@ public class Core {
                 break;
             }
         }
+        
+        
 
         account.left = pumbTran.remainingAvailable == null ? pumbTran.remaining : pumbTran.remainingAvailable;
         accountDao.save(account, context);

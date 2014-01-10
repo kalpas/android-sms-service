@@ -7,11 +7,12 @@ import org.joda.time.DateTime;
 
 public class Transaction implements Serializable {
 
-    private static final long serialVersionUID = 392982765103974346L;
+    private static final long serialVersionUID = -568839622047507456L;
 
     public Transaction(DateTime date) {
         this.date = date;
         this.id = date.getMillis() + new Date().getTime();
+        // + Math.round(Math.random() * Long.MAX_VALUE)
     }
 
     public String   cardId = "default";
@@ -27,6 +28,8 @@ public class Transaction implements Serializable {
     public DateTime date;
 
     public long     id;
+
+    public TranType tranType;
 
     @Override
     public int hashCode() {
@@ -54,4 +57,19 @@ public class Transaction implements Serializable {
     public String toString() {
         return amount + " " + (description == null ? recipient : description) + "\n";
     }
+
+    public enum TranType {
+        CARD_CREDIT(true), CARD_DEBIT(true), CASH_CREDIT(false), CASH_DEBIT(false), WITHDRAWAL(true), DEPOSIT(true);
+
+        private boolean cardOperation;
+
+        private TranType(boolean cardOperation) {
+            this.cardOperation = cardOperation;
+        }
+
+        public boolean isCardOperation() {
+            return cardOperation;
+        }
+    }
+
 }

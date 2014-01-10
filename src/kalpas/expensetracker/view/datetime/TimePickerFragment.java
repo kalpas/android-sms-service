@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 public class TimePickerFragment extends DialogFragment implements OnTimeSetListener {
@@ -36,12 +35,12 @@ public class TimePickerFragment extends DialogFragment implements OnTimeSetListe
         int hour = time.getHourOfDay();
         int minute = time.getMinuteOfHour();
 
-        return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
+        return new TimePickerDialog(getActivity(), this, hour, minute, true);
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        listener.onTimeSet(hourOfDay,minute);
+        listener.onTimeSet(hourOfDay, minute);
 
     }
 

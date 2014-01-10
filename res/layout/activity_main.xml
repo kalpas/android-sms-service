@@ -13,8 +13,8 @@
             android:id="@+id/TextViewMain"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" 
-            android:text="@string/not_specified"/>
+            android:layout_weight="1"
+            android:text="@string/not_specified" />
 
         <Spinner
             android:id="@+id/sort"
@@ -26,6 +26,7 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true" />
 
 </LinearLayout>
