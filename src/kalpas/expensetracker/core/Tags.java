@@ -21,6 +21,13 @@ import com.google.gson.Gson;
 
 public class Tags {
 
+    private Tags() {
+    }
+
+    public static Tags getTagsProvider() {
+        return new Tags();// FIXME singleton here
+    }
+
     private static final Splitter splitter       = Splitter.on(",").trimResults();
     private static final String   TAGS_FILE_NAME = "tags.json";
     private Gson                  gson           = new Gson();

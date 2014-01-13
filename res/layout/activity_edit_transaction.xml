@@ -3,10 +3,13 @@
     android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
+    android:layout_marginBottom="16dp"
     android:orientation="vertical" >
 
+    <!-- BUTTON BAR -->
+
     <LinearLayout
+        android:id="@+id/button_bar"
         style=" ?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +27,7 @@
             android:text="@string/dialog_tran_split_button" />
 
         <Button
-            android:id="@+id/button_save"
+            android:id="@+id/button_update"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,6 +49,11 @@
             android:text="@string/dialog_tran_discard_button" />
     </LinearLayout>
 
+    <!-- END OF BUTTON BAR -->
+
+
+    <!-- DATE SHOW/EDIT -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,10 +63,10 @@
             android:id="@+id/date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="0.5"
             android:clickable="true"
             android:fontFamily="sans-serif-condensed"
@@ -72,10 +80,10 @@
             android:id="@+id/time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="0.5"
             android:clickable="true"
             android:fontFamily="sans-serif-condensed"
@@ -86,11 +94,13 @@
             android:textSize="18sp" />
     </LinearLayout>
 
+    <!-- END OF DATE -->
+
     <TextView
         android:id="@+id/recipient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"
@@ -102,7 +112,7 @@
         android:id="@+id/amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"
@@ -110,11 +120,52 @@
         android:hint="@string/amount"
         android:inputType="phone" />
 
+    <!-- TAGS -->
+
+    <ScrollView
+        android:id="@+id/tag_list_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/tag_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/button_cash"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="fill_horizontal"
+                android:layout_weight="1"
+                android:background="@android:color/holo_blue_light"
+                android:minHeight="32dp"
+                android:onClick="onMarkAsCashClick"
+                android:text="@string/mark_cash" />
+
+            <Button
+                android:id="@+id/button_done"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="fill_horizontal"
+                android:layout_weight="1"
+                android:background="@android:color/holo_green_light"
+                android:minHeight="32dp"
+                android:onClick="onAddTagsClick"
+                android:text="@string/add_tags" />
+        </LinearLayout>
+    </ScrollView>
+
     <EditText
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"
@@ -122,26 +173,11 @@
         android:hint="@string/description"
         android:inputType="textMultiLine" />
 
-    <ScrollView
-        android:id="@+id/tagGridParent"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal" >
-
-        <GridLayout
-            android:id="@+id/tagGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="3" >
-        </GridLayout>
-    </ScrollView>
-
     <EditText
         android:id="@+id/tags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"

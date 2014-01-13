@@ -35,7 +35,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnItemClickListener, OnItemLongClickListener,
         RemoveTransactionListener {
 
-    public static final String    KEY_PREF_SORT    = "pref_sort";
+    public static final String     KEY_PREF_SORT    = "pref_sort";
     public static final String     TAG              = "kalpas.expensetracker";
     public static final String     KEY_PREFS_SENDER = "pref_sender";
 
@@ -69,6 +69,14 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
     @Override
     protected void onStart() {
+
+//        Intent i = new Intent("android.provider.Telephony.SMS_RECEIVED");
+//        List<ResolveInfo> infos = getPackageManager().queryBroadcastReceivers(i, 0);
+//        for (ResolveInfo info : infos) {
+//            Toast.makeText(this, "Receiver name:" + info.activityInfo.name + "; priority=" + info.priority,
+//                    Toast.LENGTH_SHORT).show();
+//        }
+
         super.onStart();
 
         textView.setText(core.getAccountSummary());

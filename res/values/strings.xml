@@ -37,6 +37,8 @@
     <string name="pref_saldo">Saldo</string>
     <string name="enter_amount">Please enter amount</string>
     <string name="done">Done</string>
+    <string name="add_tags">Add selected tags</string>
+    <string name="mark_cash">Mark as "cash"</string>
 
     <string-array name="spinner_sort_types">
         <item>@string/date_asc</item>

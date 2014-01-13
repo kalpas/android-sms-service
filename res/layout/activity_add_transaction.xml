@@ -12,7 +12,7 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/button_save"
+            android:id="@+id/button_update"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
