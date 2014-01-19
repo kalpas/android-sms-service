@@ -21,6 +21,7 @@ import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -149,11 +150,9 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
                 .getDisplayMetrics());
         int margin4dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
-        int margin16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources()
-                .getDisplayMetrics());
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(margin16dp, 0, margin4dp, 0);
+        layoutParams.setMargins(margin4dp, 0, margin4dp, 0);
 
         itemView = new ToggleButton(this, null, android.R.attr.buttonBarButtonStyle);
         itemView.setLayoutParams(layoutParams);
@@ -169,9 +168,11 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
                 if (button.isChecked()) {
                     toggledTags.add(button.getText().toString());
                     button.setTextColor(getResources().getColor(android.R.color.holo_blue_bright));
+                    button.setBackgroundColor(getResources().getColor(R.color.highlight));
                 } else {
                     toggledTags.remove(button.getText().toString());
                     button.setTextColor(getResources().getColor(android.R.color.white));
+                    button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 }
             }
         });
@@ -182,12 +183,10 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     private ImageView createDivider() {
         int margin4dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
-        int margin16dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources()
-                .getDisplayMetrics());
 
         ImageView divider = new ImageView(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 1);
-        lp.setMargins(margin16dp, 0, margin4dp, 0);
+        lp.setMargins(margin4dp, 0, margin4dp, 0);
         divider.setLayoutParams(lp);
         divider.setBackgroundColor(Color.GRAY);
         return divider;

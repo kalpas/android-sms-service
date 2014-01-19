@@ -80,7 +80,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             if (highlight) {
                 if (tx.tags != null && tx.tags.contains("cash")) {
                     colorLabel.setBackgroundColor(context.getResources().getColor(android.R.color.holo_green_light));
-                    itemView.setBackgroundColor(context.getResources().getColor(R.color.cash_highlight));
+                    itemView.setBackgroundColor(context.getResources().getColor(R.color.highlight));
                 } else {
                     colorLabel.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
                 }
