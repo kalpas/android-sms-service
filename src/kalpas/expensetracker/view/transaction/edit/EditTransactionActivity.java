@@ -21,7 +21,6 @@ import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -64,6 +63,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     private Button             updateButton;
     @SuppressWarnings("unused")
     private Button             discardButton;
+    private Button             btAddTags;
+    private Button             btMarkAsCash;
 
     private List<String>       toggledTags       = new ArrayList<String>();
 
@@ -72,6 +73,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_edit_transaction);
+
+        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
     @Override
@@ -105,6 +108,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         splitButton = (Button) findViewById(R.id.button_split);
         updateButton = (Button) findViewById(R.id.button_update);
         discardButton = (Button) findViewById(R.id.button_discard);
+        btAddTags = (Button) findViewById(R.id.button_add_tags);
+        btMarkAsCash = (Button) findViewById(R.id.button_cash);
 
     }
 
@@ -119,14 +124,16 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
             transaction = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
 
             if (StringUtils.isEmpty(transaction.tags)) {
+                hideBasicControls();
                 showInteractiveTagSelection();// show tag list
             } else {
-                parent.removeView(scrollTagsView);
+                hideTagSelectionControls();
                 showBasicControls();
             }
 
             if (ACTION_SAVE_SPLIT.equals(action)) {
-                sendUpdate();
+                sendUpdate();// returning from split screen, need to save
+                             // changes to the original transaction
             }
 
             if (StringUtils.isEmpty(transaction.recipient)) {
@@ -142,6 +149,12 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
             updateDateTime();
         }
 
+    }
+
+    private void hideTagSelectionControls() {
+        parent.removeView(scrollTagsView);
+        btMarkAsCash.setVisibility(View.GONE);
+        btAddTags.setVisibility(View.GONE);
     }
 
     private ToggleButton createTagButton(String tag) {
@@ -215,11 +228,10 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     }
 
     private void showInteractiveTagSelection() {
-        hideBasicControls();
-
         Tags tagProvider = Tags.getTagsProvider();
         List<String> tagsList = tagProvider.getTags(this);
 
+        tagsContainer.addView(createDivider());
         for (String tag : tagsList) {
             tagsContainer.addView(createTagButton(tag));
             tagsContainer.addView(createDivider());
@@ -337,7 +349,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
      */
     public void onAddTagsClick(View v) {
         tags.setText(Joiner.on(", ").skipNulls().join(toggledTags));
-        parent.removeView(scrollTagsView);
+        hideTagSelectionControls();
         showBasicControls();
     }
 
@@ -347,7 +359,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     public void onMarkAsCashClick(View v) {
         transaction.tranType = TranType.WITHDRAWAL;
         tags.setText("cash");
-        parent.removeView(scrollTagsView);
+        hideTagSelectionControls();
         showBasicControls();
     }
 

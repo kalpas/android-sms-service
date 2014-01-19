@@ -4,6 +4,7 @@ import java.util.List;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.CoreFactory;
+import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
@@ -40,6 +41,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     public static final String     KEY_PREFS_SENDER = "pref_sender";
 
     private Core                   core;
+    private Tags                   tags;
 
     private TextView               textView;
     private ListView               listView;
@@ -60,6 +62,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
         // instantiate core
         core = CoreFactory.getInstance(this);
+        tags = Tags.getTagsProvider();
         textView = (TextView) findViewById(R.id.TextViewMain);
         sortType = (Spinner) findViewById(R.id.sort);
         listView = (ListView) findViewById(R.id.list);
@@ -70,12 +73,14 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     @Override
     protected void onStart() {
 
-//        Intent i = new Intent("android.provider.Telephony.SMS_RECEIVED");
-//        List<ResolveInfo> infos = getPackageManager().queryBroadcastReceivers(i, 0);
-//        for (ResolveInfo info : infos) {
-//            Toast.makeText(this, "Receiver name:" + info.activityInfo.name + "; priority=" + info.priority,
-//                    Toast.LENGTH_SHORT).show();
-//        }
+        // Intent i = new Intent("android.provider.Telephony.SMS_RECEIVED");
+        // List<ResolveInfo> infos =
+        // getPackageManager().queryBroadcastReceivers(i, 0);
+        // for (ResolveInfo info : infos) {
+        // Toast.makeText(this, "Receiver name:" + info.activityInfo.name +
+        // "; priority=" + info.priority,
+        // Toast.LENGTH_SHORT).show();
+        // }
 
         super.onStart();
 
@@ -99,7 +104,8 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         if (action != null) {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData();
-                refresh(null);
+                tags.deleteAll(this);
+                refresh();
             }
         }
         setIntent(null);

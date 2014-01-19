@@ -2,6 +2,7 @@ package kalpas.expensetracker;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.CoreFactory;
+import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import kalpas.sms.parse.PumbSmsParser;
@@ -38,10 +39,13 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
 
     private Core                core;
 
+    private Tags                tags;
+
     @Override
     public void onCreate() {
         super.onCreate();
         core = CoreFactory.getInstance(this);
+        tags = Tags.getTagsProvider();
 
     }
 
@@ -75,9 +79,11 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
                 }
             } else if (ACTION_UPDATE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
+                tags.addTags(trx.tags, this);
                 core.updateTransactionDetails(trx);
             } else if (ACTION_ADD.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
+                tags.addTags(trx.tags, this);
                 core.addTransaction(trx);
             } else if (ACTION_REMOVE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);

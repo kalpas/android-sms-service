@@ -24,8 +24,20 @@ public class Tags {
     private Tags() {
     }
 
+    private static volatile Tags instance;
+
     public static Tags getTagsProvider() {
-        return new Tags();// FIXME singleton here
+        Tags result = instance;
+        if (result == null) {
+            synchronized (Tags.class) {
+                if (instance == null) {
+                    instance = new Tags();
+                }
+            }
+            return instance;
+        }
+
+        return result;
     }
 
     private static final Splitter splitter       = Splitter.on(",").trimResults();
@@ -68,6 +80,10 @@ public class Tags {
             e.printStackTrace();
         }
         return set;
+    }
+
+    public void deleteAll(Context context) {
+        context.deleteFile(TAGS_FILE_NAME);
     }
 
 }

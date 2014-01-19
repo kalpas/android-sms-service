@@ -61,10 +61,7 @@ public class Core {
         Double incomeGrandTotal = 0.;
         Double cashWithdrawed = 0.;
         Double cashLeft = 0.;
-        Tags tags =Tags.getTagsProvider();//FIXME
         for (Transaction trx : transactions) {
-            //FIXME just for test
-            tags.addTags(trx.tags, context);
             if (trx.amount > 0) {
                 incomeGrandTotal += trx.amount;
             } else {
@@ -253,8 +250,6 @@ public class Core {
                 break;
             }
         }
-        
-        
 
         account.left = pumbTran.remainingAvailable == null ? pumbTran.remaining : pumbTran.remainingAvailable;
         accountDao.save(account, context);

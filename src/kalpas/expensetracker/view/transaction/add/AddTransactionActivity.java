@@ -16,10 +16,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.LinearLayout.LayoutParams;
 
 public class AddTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
         DatePickerFragment.DateSetListener {
@@ -41,7 +43,10 @@ public class AddTransactionActivity extends Activity implements TimePickerFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_add_transaction);
+
+        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
     @Override
