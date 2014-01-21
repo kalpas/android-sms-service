@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
     public static final String ACTION_EDIT       = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
     public static final String ACTION_SAVE_SPLIT = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SAVE_SPLIT";
+    public static final String ACTION_SPLIT      = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SPLIT";
 
     private TextView           date;
     private TextView           time;
@@ -62,7 +64,11 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     private ImageButton        btAddTags;
     private ImageButton        btAcceptTags;
 
+    private ToggleButton       sign;
+
     private List<String>       toggledTags       = new ArrayList<String>();
+
+    private String             action;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +110,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         btAddTags = (ImageButton) findViewById(R.id.button_add_tags);
         btAcceptTags = (ImageButton) findViewById(R.id.button_accept_tags);
 
+        sign = (ToggleButton) findViewById(R.id.sign);
+
     }
 
     @Override
@@ -111,34 +119,38 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         super.onResume();
 
         Intent intent = getIntent();
-        String action = intent == null ? null : intent.getAction();
-
-        if (ACTION_EDIT.equals(action) || ACTION_SAVE_SPLIT.equals(action)) {
+        action = intent == null ? null : intent.getAction();
+        if (action != null) {
             transaction = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
+            if (ACTION_EDIT.equals(action) || ACTION_SAVE_SPLIT.equals(action)) {
 
-            if (ACTION_SAVE_SPLIT.equals(action)) {
-                sendUpdate();// returning from split screen, need to save
-                             // changes to the original transaction
+                if (ACTION_SAVE_SPLIT.equals(action)) {
+                    sendUpdate();// returning from split screen, need to save
+                                 // changes to the original transaction
+                }
+
+                if (StringUtils.isEmpty(transaction.recipient)) {
+                    parent.removeView(recipient);
+                } else {
+                    recipient.setText(transaction.recipient);
+                }
+
+                amount.setText(transaction.amount.toString());
+                description.setText(transaction.description);
+                tags.setText(transaction.tags);
+                dateTime = new DateTime(transaction.date);
+            } else if (ACTION_SPLIT.equals(action)) {
+                amount.setText(transaction.amount.toString());
+                dateTime = transaction.date;
             }
-
-            if (StringUtils.isEmpty(transaction.recipient)) {
-                parent.removeView(recipient);
-            } else {
-                recipient.setText(transaction.recipient);
-            }
-
-            amount.setText(transaction.amount.toString());
-            description.setText(transaction.description);
-            tags.setText(transaction.tags);
-            dateTime = new DateTime(transaction.date);
             updateDateTime();
         }
 
     }
 
     private void sendSplit() {
-        Intent splitIntent = new Intent(this, AddTransactionActivity.class);
-        splitIntent.setAction(AddTransactionActivity.ACTION_SPLIT);
+        Intent splitIntent = new Intent(this, EditTransactionActivity.class);
+        splitIntent.setAction(EditTransactionActivity.ACTION_SPLIT);
         splitIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
         startActivity(splitIntent);
     }
@@ -201,11 +213,6 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         btAcceptTags.setVisibility(View.GONE);
 
         tags.setVisibility(View.VISIBLE);
-    }
-
-    private void update() {
-        updateWithChanges();
-        sendUpdate();
     }
 
     private void updateDateTime() {
@@ -337,7 +344,48 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
      * @param view
      */
     public void update(View view) {
-        update();
+
+        if (ACTION_SPLIT.equals(action)) {
+            //
+            Transaction trx;
+
+            trx = new Transaction(dateTime);
+
+            try {
+                trx.amount = Double.valueOf(amount.getText().toString());
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, getResources().getString(R.string.enter_amount), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!sign.isChecked() && trx.amount > 0) {
+                trx.amount = -trx.amount;
+            }
+            trx.description = description.getText().toString();
+            trx.tags = tags.getText().toString();
+
+            Intent update = new Intent(this, BackgroundService.class);
+            update.setAction(BackgroundService.ACTION_ADD);
+            update.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+            startService(update);
+
+            if (action != null && ACTION_SPLIT.equals(action)) {
+                trx.recipient = transaction.recipient;
+                trx.date = transaction.date;
+
+                transaction.amount -= trx.amount;
+
+                Intent intent = new Intent(this, EditTransactionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.setAction(EditTransactionActivity.ACTION_SAVE_SPLIT);
+                intent.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+                startActivity(intent);
+            }
+
+        } else {
+            updateWithChanges();
+            sendUpdate();
+        }
+
         this.finish();
     }
 
