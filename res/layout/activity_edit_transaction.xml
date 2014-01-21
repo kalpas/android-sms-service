@@ -16,26 +16,16 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/button_cash"
+            android:id="@+id/button_discard"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="@android:color/holo_blue_light"
-            android:onClick="onMarkAsCashClick"
-            android:text="@string/mark_cash" />
-
-        <Button
-            android:id="@+id/button_add_tags"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
-            android:onClick="onAddTagsClick"
-            android:text="@string/add_tags" />
+            android:background="@android:color/darker_gray"
+            android:drawableLeft="@drawable/navigation_cancel"
+            android:onClick="discard"
+            android:text="@android:string/cancel" />
 
         <Button
             android:id="@+id/button_split"
@@ -45,30 +35,21 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@android:color/holo_blue_light"
+            android:drawableLeft="@drawable/content_split"
             android:onClick="split"
             android:text="@string/dialog_tran_split_button" />
 
         <Button
-            android:id="@+id/button_update"
+            android:id="@+id/button_save"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@android:color/holo_green_light"
+            android:drawableLeft="@drawable/navigation_accept"
             android:onClick="update"
             android:text="@string/dialog_tran_save_button" />
-
-        <Button
-            android:id="@+id/button_discard"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@android:color/darker_gray"
-            android:onClick="discard"
-            android:text="@string/dialog_tran_discard_button" />
     </LinearLayout>
 
     <!-- END OF BUTTON BAR -->
@@ -138,27 +119,10 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-condensed"
         android:hint="@string/amount"
-        android:inputType="phone" />
-
-    <!-- TAGS -->
-
-    <ScrollView
-        android:id="@+id/tag_list_parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal" >
-
-        <LinearLayout
-            android:id="@+id/tag_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-    </ScrollView>
+        android:inputType="phone"
+        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/description"
@@ -172,16 +136,67 @@
         android:hint="@string/description"
         android:inputType="textMultiLine" />
 
-    <EditText
-        android:id="@+id/tags"
+    <LinearLayout
+        android:id="@+id/bar_edit_tags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif"
-        android:hint="@string/tags"
-        android:inputType="textMultiLine" />
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/tags"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif"
+            android:hint="@string/tags_hint"
+            android:inputType="textMultiLine" />
+
+        <!-- TAGS -->
+
+        <ScrollView
+            android:id="@+id/tag_list_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:id="@+id/tag_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="?android:attr/listDivider"
+                android:orientation="vertical"
+                android:showDividers="middle" >
+            </LinearLayout>
+        </ScrollView>
+
+        <ImageButton
+            android:id="@+id/button_add_tags"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/add_tags"
+            android:onClick="onAddTagsClick"
+            android:src="@drawable/content_new" />
+
+        <ImageButton
+            android:id="@+id/button_accept_tags"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/add_tags"
+            android:onClick="onAcceptTagsClick"
+            android:src="@drawable/navigation_accept"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>
