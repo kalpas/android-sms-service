@@ -12,7 +12,6 @@ import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.datetime.DatePickerFragment;
 import kalpas.expensetracker.view.datetime.TimePickerFragment;
-import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -30,10 +29,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
@@ -70,6 +69,20 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
     private String             action;
 
+    private int                number;
+
+    private static class Counter {
+        private static int count = 0;
+
+        public static void increment() {
+            count++;
+        }
+
+        public static int getCount() {
+            return count;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +90,9 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         setContentView(R.layout.activity_edit_transaction);
 
         getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+        Counter.increment();
+        number = Counter.getCount();
     }
 
     @Override
@@ -118,9 +134,10 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     protected void onResume() {
         super.onResume();
 
-        Intent intent = getIntent();
+        Intent intent = getIntent(); 
         action = intent == null ? null : intent.getAction();
         if (action != null) {
+
             transaction = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
             if (ACTION_EDIT.equals(action) || ACTION_SAVE_SPLIT.equals(action)) {
 
@@ -144,6 +161,8 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
                 dateTime = transaction.date;
             }
             updateDateTime();
+
+            description.setText(Integer.toString(number));
         }
 
     }
@@ -333,7 +352,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
      * 
      * @param view
      */
-    public void split(View view) {
+    public void onSplit(View view) {
         updateWithChanges();
         sendSplit();
     }
@@ -365,13 +384,10 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
             Intent update = new Intent(this, BackgroundService.class);
             update.setAction(BackgroundService.ACTION_ADD);
-            update.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+            update.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
             startService(update);
 
             if (action != null && ACTION_SPLIT.equals(action)) {
-                trx.recipient = transaction.recipient;
-                trx.date = transaction.date;
-
                 transaction.amount -= trx.amount;
 
                 Intent intent = new Intent(this, EditTransactionActivity.class);
