@@ -59,16 +59,28 @@ public class Transaction implements Serializable {
     }
 
     public enum TranType {
-        CARD_CREDIT(true), CARD_DEBIT(true), CASH_CREDIT(false), CASH_DEBIT(false), WITHDRAWAL(true), DEPOSIT(true);
+        CARD_CREDIT(true, "card credit"), CARD_DEBIT(true, "card debit"), CASH_CREDIT(false, "cash_credit"), CASH_DEBIT(
+                false, "cash debit"), WITHDRAWAL(true, "withdrawal"), DEPOSIT(true, "deposit");
 
         private boolean cardOperation;
+        private String  name;
 
-        private TranType(boolean cardOperation) {
+        private TranType(boolean cardOperation, String name) {
             this.cardOperation = cardOperation;
+            this.name = name;
         }
 
         public boolean isCardOperation() {
             return cardOperation;
+        }
+
+        public static TranType forName(String typeName) {
+            for (TranType type : TranType.values()) {
+                if (type.name.equals(typeName)) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Illegal transaction type: " + typeName);
         }
     }
 

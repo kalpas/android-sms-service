@@ -40,7 +40,7 @@ public class Tags {
         return result;
     }
 
-    private static final Splitter splitter       = Splitter.on(",").trimResults();
+    private static final Splitter splitter       = Splitter.on(",").omitEmptyStrings().trimResults();
     private static final String   TAGS_FILE_NAME = "tags.json";
     private Gson                  gson           = new Gson();
 

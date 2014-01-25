@@ -24,7 +24,7 @@
             android:layout_weight="1"
             android:background="@android:color/darker_gray"
             android:drawableLeft="@drawable/navigation_cancel"
-            android:onClick="discard"
+            android:onClick="onCancel"
             android:text="@android:string/cancel" />
 
         <Button
@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:background="@android:color/holo_blue_light"
             android:drawableLeft="@drawable/content_split"
-            android:onClick="split"
+            android:onClick="onSplit"
             android:text="@string/dialog_tran_split_button" />
 
         <Button
@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:background="@android:color/holo_green_light"
             android:drawableLeft="@drawable/navigation_accept"
-            android:onClick="update"
+            android:onClick="onUpdate"
             android:text="@string/dialog_tran_save_button" />
     </LinearLayout>
 
@@ -125,20 +125,49 @@
             android:layout_gravity="center_vertical"
             android:textOff="-"
             android:textOn="+"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
-    <EditText
-        android:id="@+id/amount"
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="0.75"
+            android:fontFamily="sans-serif-condensed"
+            android:hint="@string/amount"
+            android:inputType="phone"
+            android:textSize="30sp" />
+
+        <ToggleButton
+            android:id="@+id/button_tran_details"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/tran_edit_advanced"
+            android:drawableBottom="@drawable/toggle_expand"
+            android:onClick="onAdvancedTransactionDetailsClick"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tran_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:fontFamily="sans-serif-condensed"
-        android:hint="@string/amount"
-        android:inputType="phone"
-        android:textSize="30sp" />
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <Spinner
+            android:id="@+id/spinner_tran_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <EditText
@@ -208,8 +237,8 @@
             android:id="@+id/button_accept_tags"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
             android:contentDescription="@string/add_tags"
             android:onClick="onAcceptTagsClick"
             android:src="@drawable/navigation_accept"

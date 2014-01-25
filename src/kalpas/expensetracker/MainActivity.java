@@ -8,7 +8,6 @@ import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
-import kalpas.expensetracker.view.transaction.add.AddTransactionActivity;
 import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import kalpas.expensetracker.view.transaction.remove.RemoveTransactionDialog;
 import kalpas.expensetracker.view.transaction.remove.RemoveTransactionDialog.RemoveTransactionListener;
@@ -153,7 +152,8 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
             startActivity(summaryIntent);
             return true;
         case R.id.action_add:
-            Intent addIntent = new Intent(this, AddTransactionActivity.class);
+            Intent addIntent = new Intent(this, EditTransactionActivity.class);
+            addIntent.setAction(EditTransactionActivity.ACTION_ADD);
             startActivity(addIntent);
             return true;
         default:

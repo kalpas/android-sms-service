@@ -36,8 +36,10 @@
     <string name="pref_saldo_summ">Saldo of the card account when the app was installed</string>
     <string name="pref_saldo">Saldo</string>
     <string name="enter_amount">Please enter amount</string>
+    <string name="split_amount_warning">Please enter amount less than original</string>
     <string name="done">Done</string>
     <string name="add_tags">Add selected tags</string>
+    <string name="tran_edit_advanced">Advanced transaction options</string>
     <string name="mark_cash">Mark as "cash"</string>
     <string name="new_tag">(enter tags manually)</string>
     <string name="new_tag_hint">enter tags manually</string>
@@ -63,5 +65,21 @@
     <string name="EN">EN</string>
     <string name="UA">UA</string>
     <string name="NONE">NONE</string>
+
+    <string-array name="tran_types">
+        <item>@string/card_credit</item>
+        <item>@string/card_debit</item>
+        <item>@string/cash_debit</item>
+        <item>@string/cash_credit</item>
+        <item>@string/withdrawal</item>
+        <item>@string/deposit</item>
+    </string-array>
+
+    <string name="card_credit">card credit</string>
+    <string name="card_debit">card debit</string>
+    <string name="cash_credit">card credit</string>
+    <string name="cash_debit">card debit</string>
+    <string name="withdrawal">withdrawal</string>
+    <string name="deposit">deposit</string>
 
 </resources>
