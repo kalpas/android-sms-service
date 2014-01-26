@@ -4,6 +4,7 @@ import java.util.List;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.CoreFactory;
+import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;

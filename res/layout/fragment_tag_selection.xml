@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bar_edit_tags"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".TagSelectionFragment" >
+
+    <LinearLayout
+        android:id="@+id/button_bar"
+        style=" ?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_discard"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@android:color/darker_gray"
+            android:drawableLeft="@drawable/navigation_cancel"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/button_save"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@android:color/holo_green_light"
+            android:drawableLeft="@drawable/navigation_accept"
+            android:text="@string/dialog_tran_save_button" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:scaleType="fitXY"
+        android:src="?android:attr/listDivider"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tag_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans_serif"
+        android:textColor="@android:color/holo_blue_bright"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:scaleType="fitXY"
+        android:src="?android:attr/listDivider"
+        tools:ignore="ContentDescription" />
+
+    <ScrollView
+        android:id="@+id/tag_list_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/tag_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/listDivider"
+            android:orientation="vertical"
+            android:showDividers="middle" >
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

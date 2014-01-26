@@ -69,10 +69,10 @@ public class SuggestionsFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         // try { //FIXME
-        // mListener = (OnFragmentInteractionListener) activity;
+        // mListener = (OnTagsSelectedListener) activity;
         // } catch (ClassCastException e) {
         // throw new ClassCastException(activity.toString() +
-        // " must implement OnFragmentInteractionListener");
+        // " must implement OnTagsSelectedListener");
         // }
     }
 

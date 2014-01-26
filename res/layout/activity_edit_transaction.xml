@@ -194,28 +194,6 @@
             android:hint="@string/tags_hint"
             android:inputType="textMultiLine" />
 
-        <!-- TAGS -->
-
-        <ScrollView
-            android:id="@+id/tag_list_parent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:visibility="gone" >
-
-            <LinearLayout
-                android:id="@+id/tag_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="?android:attr/listDivider"
-                android:orientation="vertical"
-                android:showDividers="middle" >
-            </LinearLayout>
-        </ScrollView>
-
         <ImageButton
             android:id="@+id/button_add_tags"
             style="?android:attr/buttonBarButtonStyle"
@@ -225,17 +203,6 @@
             android:contentDescription="@string/add_tags"
             android:onClick="onAddTagsClick"
             android:src="@drawable/content_new" />
-
-        <ImageButton
-            android:id="@+id/button_accept_tags"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:contentDescription="@string/add_tags"
-            android:onClick="onAcceptTagsClick"
-            android:src="@drawable/navigation_accept"
-            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>
