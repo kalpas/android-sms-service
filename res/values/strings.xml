@@ -43,6 +43,9 @@
     <string name="mark_cash">Mark as "cash"</string>
     <string name="new_tag">(enter tags manually)</string>
     <string name="new_tag_hint">enter tags manually</string>
+    <string name="section_suggested">Suggested tags</string>
+    <string name="section_popular">Popular tags</string>
+    <string name="section_other">Other tags</string>
 
     <string-array name="spinner_sort_types">
         <item>@string/date_asc</item>

@@ -1,37 +1,47 @@
 package kalpas.expensetracker.core;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
 
 import android.content.Context;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.gson.Gson;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multisets;
 
 public class Tags {
 
+    // ******************************************************//
+
     private Tags() {
+        throw new UnsupportedOperationException("use constructor with Context arg instaed");
+    }
+
+    private Tags(Context context) {
+        this.context = context;
+        this.transactionsDAO = new TransactionsDAO();
+        buildCache();
     }
 
     private static volatile Tags instance;
+    private final Context        context;
 
-    public static Tags getTagsProvider() {
+    public static Tags getInstance(Context context) {
         Tags result = instance;
         if (result == null) {
             synchronized (Tags.class) {
                 if (instance == null) {
-                    instance = new Tags();
+                    instance = new Tags(context);
                 }
             }
             return instance;
@@ -40,50 +50,78 @@ public class Tags {
         return result;
     }
 
-    private static final Splitter splitter       = Splitter.on(",").omitEmptyStrings().trimResults();
-    private static final String   TAGS_FILE_NAME = "tags.json";
-    private Gson                  gson           = new Gson();
+    // ******************************************************//
 
-    public List<String> getTags(Context context) {
-        return Lists.newArrayList(load(context));
-    }
+    private final static Splitter    splitter = Splitter.on(",").omitEmptyStrings().trimResults();
 
-    public void addTags(String tagString, Context context) {
-        if (StringUtils.isEmpty(tagString)) {
-            return;
-        }
-        Set<String> tags = load(context);
-        Iterables.addAll(tags, splitter.split(tagString));
-        save(tags, context);
-    }
+    private TransactionsDAO          transactionsDAO;
 
-    private void save(Set<String> tags, Context context) {
-        FileOutputStream fos = null;
-        try {
-            fos = context.openFileOutput(TAGS_FILE_NAME, Context.MODE_PRIVATE);
-            fos.write(gson.toJson(tags.toArray(new String[tags.size()])).getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private Multimap<String, String> cache;
+
+    public void buildCache() {
+
+        cache = LinkedListMultimap.create();
+        List<Transaction> list = transactionsDAO.load(context);
+
+        for (Transaction element : list) {
+            String recipient = element.recipient;
+            if (!Strings.isNullOrEmpty(recipient) && !Strings.isNullOrEmpty(element.tags)) {
+                Iterable<String> tagArray = splitter.split(element.tags);
+                cache.putAll(recipient, tagArray);
+            }
         }
     }
 
-    private Set<String> load(Context context) {
-        Set<String> set = new HashSet<String>();
-        FileInputStream fis;
-        try {
-            fis = context.openFileInput(TAGS_FILE_NAME);
-            set = Sets.newHashSet(gson.fromJson(new InputStreamReader(fis), String[].class));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public List<String> getSuggestedTags(Transaction transaction) {
+        List<String> result = new ArrayList<String>();
+        String recipient = transaction.recipient;
+        if (!Strings.isNullOrEmpty(recipient) && cache.containsKey(recipient)) {
+            Multiset<String> tags = Multisets.copyHighestCountFirst(HashMultiset.create(cache.get(recipient)));
+            for (String tag : tags.elementSet()) {
+                result.add(tag);
+            }
         }
-        return set;
+        return result;
     }
 
-    public void deleteAll(Context context) {
-        context.deleteFile(TAGS_FILE_NAME);
+    public Collection<String> getTags() {
+        List<String> result;
+        HashSet<String> unsortedSet = new HashSet<String>();
+        unsortedSet.addAll(cache.values());
+        result = Lists.newArrayList(unsortedSet);
+        Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
+        return result;
     }
 
+    public Collection<String> getPopularTags() {
+        LinkedList<String> result = new LinkedList<String>();
+        Multiset<String> tags = Multisets.copyHighestCountFirst(HashMultiset.create(cache.values()));
+        Iterator<String> iterator = tags.elementSet().iterator();
+        while (iterator.hasNext() && result.size() < 6) {
+            result.add(iterator.next());
+        }
+        return result;
+    }
+
+    @Deprecated
+    public String debugOutput() {
+        buildCache();
+
+        StringBuilder builder = new StringBuilder();
+
+        Multiset<String> keys = Multisets.copyHighestCountFirst(cache.keys());
+
+        for (String key : keys.elementSet()) {
+            int recipientCount = keys.count(key);
+            builder.append(String.format("\"%s\" (%d):%n", key, recipientCount));
+            Multiset<String> tags = Multisets.copyHighestCountFirst(HashMultiset.create(cache.get(key)));
+            for (String tag : tags.elementSet()) {
+                int count = tags.count(tag);
+                builder.append(String.format("\t %s (%d - %.2f%%)%n", tag, count, count * 100. / recipientCount));
+            }
+            builder.append("_____________________\n");
+        }
+
+        return builder.toString();
+    }
 }

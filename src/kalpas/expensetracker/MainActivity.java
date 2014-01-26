@@ -4,7 +4,6 @@ import java.util.List;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.CoreFactory;
-import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
@@ -40,7 +39,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
     public static final String     KEY_PREFS_SENDER = "pref_sender";
 
     private Core                   core;
-    private Tags                   tags;
 
     private TextView               textView;
     private ListView               listView;
@@ -61,7 +59,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
 
         // instantiate core
         core = CoreFactory.getInstance(this);
-        tags = Tags.getTagsProvider();
         textView = (TextView) findViewById(R.id.TextViewMain);
         sortType = (Spinner) findViewById(R.id.sort);
         listView = (ListView) findViewById(R.id.list);
@@ -103,7 +100,6 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         if (action != null) {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData();
-                tags.deleteAll(this);
                 refresh();
             }
         }

@@ -8,15 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import kalpas.sms.parse.PumbTransaction;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.base.Functions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -66,7 +64,7 @@ public class Core {
                 incomeGrandTotal += trx.amount;
             } else {
                 spentGrandTotal += Math.abs(trx.amount);
-                if (!StringUtils.isEmpty(trx.tags) && trx.tags.contains("cash")) {
+                if (!Strings.isNullOrEmpty(trx.tags) && trx.tags.contains("cash")) {
                     cashWithdrawed += Math.abs(trx.amount);
                 }
             }
@@ -95,6 +93,9 @@ public class Core {
         text.append("_____________\n");
 
         text.append(getTagStats(trxs));// tags
+        text.append("_____________\n");
+        
+        text.append(Tags.getInstance(context).debugOutput());
 
         return text.toString();
     }
@@ -147,7 +148,7 @@ public class Core {
 
         SortedMultiset<String> atms = TreeMultiset.create();
         for (Transaction tx : trxs) {
-            if (!StringUtils.isEmpty(tx.recipient)) {
+            if (!Strings.isNullOrEmpty(tx.recipient)) {
                 atms.add(tx.recipient);
             }
         }
@@ -178,7 +179,7 @@ public class Core {
                 continue;// skip incoming transactions
             }
 
-            if (!StringUtils.isEmpty(tx.tags)) {
+            if (!Strings.isNullOrEmpty(tx.tags)) {
                 Iterable<String> tagList = splitter.split(tx.tags);
                 Iterables.addAll(tags, tagList);
                 mainTag = tagList.iterator().next();

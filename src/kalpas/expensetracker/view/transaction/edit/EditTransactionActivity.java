@@ -4,6 +4,7 @@ import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.dateFormatMi
 import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.timeFormatMid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import kalpas.expensetracker.BackgroundService;
@@ -12,12 +13,13 @@ import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.datetime.DatePickerFragment;
 import kalpas.expensetracker.view.datetime.TimePickerFragment;
+import kalpas.expensetracker.view.suggestions.SuggestionsFragment;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -25,19 +27,19 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 //TODO extract tag selection component
 public class EditTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
@@ -69,8 +71,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
     private Button             splitButton;
 
-    private LinearLayout       advancedTranDetailsView;
-    private Spinner            tranTypeSpinner;
+    private FrameLayout        advancedTranDetailsView;
 
     private List<String>       toggledTags        = new ArrayList<String>();
 
@@ -119,8 +120,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
         splitButton = (Button) findViewById(R.id.button_split);
 
-        advancedTranDetailsView = (LinearLayout) findViewById(R.id.tran_details);
-        tranTypeSpinner = (Spinner) findViewById(R.id.spinner_tran_type);
+        advancedTranDetailsView = (FrameLayout) findViewById(R.id.tran_details);
 
     }
 
@@ -183,8 +183,6 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     }
 
     private void showTagSelection() {
-        Tags tagProvider = Tags.getTagsProvider();
-        List<String> tagsList = tagProvider.getTags(this);
 
         addTagsButton.setVisibility(View.GONE);
         acceptTagsButton.setVisibility(View.VISIBLE);
@@ -193,7 +191,29 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
 
         tagsScrollView.setVisibility(View.VISIBLE);
 
+        Tags tagProvider = Tags.getInstance(this);
+
         tagsContainerLayout.addView(createNewTagButton());
+
+        Collection<String> suggestedTags = tagProvider.getSuggestedTags(transactionModel);
+        if (!suggestedTags.isEmpty()) {
+            tagsContainerLayout.addView(createSection(R.string.section_suggested));
+            for (String tag : suggestedTags) {
+                // tagsContainerLayout.addView(createDivider());
+                tagsContainerLayout.addView(createTagButton(tag));
+            }
+        } else {
+            suggestedTags = tagProvider.getPopularTags();
+            tagsContainerLayout.addView(createSection(R.string.section_popular));
+            for (String tag : suggestedTags) {
+                // tagsContainerLayout.addView(createDivider());
+                tagsContainerLayout.addView(createTagButton(tag));
+            }
+        }
+
+        tagsContainerLayout.addView(createSection(R.string.section_other));
+
+        Collection<String> tagsList = tagProvider.getTags();
         for (String tag : tagsList) {
             // tagsContainerLayout.addView(createDivider());
             tagsContainerLayout.addView(createTagButton(tag));
@@ -225,6 +245,23 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         return newTag;
     }
 
+    private TextView createSection(int resource) {
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, getResources()
+                .getDisplayMetrics());
+        LinearLayout.LayoutParams layoutParams = getTagListLayoutParams();
+
+        TextView section = new TextView(this, null, android.R.attr.buttonBarButtonStyle);
+        section.setLayoutParams(layoutParams);
+        section.setTypeface(null, Typeface.BOLD);
+        section.setBackgroundColor(getResources().getColor(R.color.highlight));
+        section.setText(getResources().getString(resource));
+        section.setMinimumHeight(height);
+        section.setMinHeight(height);
+        section.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+
+        return section;
+    }
+
     private void hideTagSelection() {
         tagsScrollView.setVisibility(View.GONE);
         tagsContainerLayout.removeAllViews();
@@ -242,7 +279,7 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
     }
 
     private void setRecepirnt(String recipient) {
-        if (StringUtils.isEmpty(recipient)) {
+        if (Strings.isNullOrEmpty(recipient)) {
             recipientTextView.setVisibility(View.GONE);
         } else {
             recipientTextView.setVisibility(View.VISIBLE);
@@ -452,24 +489,17 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         ToggleButton toggle = (ToggleButton) v;
         if (toggle.isChecked()) {
             advancedTranDetailsView.setVisibility(View.VISIBLE);
-            ArrayAdapter<CharSequence> tranTypeAdapter = ArrayAdapter.createFromResource(this, R.array.tran_types,
-                    android.R.layout.simple_spinner_item);
-            tranTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            tranTypeSpinner.setAdapter(tranTypeAdapter);
+            SuggestionsFragment fragment = SuggestionsFragment.newInstance(transactionModel);
+
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.add(R.id.tran_details, fragment, SuggestionsFragment.TAG);
+            transaction.commit();
 
         } else {
             advancedTranDetailsView.setVisibility(View.GONE);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.remove(getFragmentManager().findFragmentByTag(SuggestionsFragment.TAG));
+            transaction.commit();
         }
     }
-
-    // FIXME
-    // /**
-    // * mark cash onClick()
-    // */
-    // public void onMarkAsCashClick(View v) {
-    // transactionModel.tranType = TranType.WITHDRAWAL;
-    // tagsEditText.setText("cash");
-    // hideTagSelectionControls();
-    // showBasicControls();
-    // }
 }

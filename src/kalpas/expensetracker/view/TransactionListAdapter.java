@@ -7,10 +7,8 @@ import java.util.List;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Longs;
 
@@ -47,8 +46,13 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View itemView = inflater.inflate(resource, null);
+        View itemView;
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            itemView = inflater.inflate(resource, null);
+        } else {
+            itemView = convertView;
+        }
 
         Transaction tx = items.get(position);
         if (tx != null) {
@@ -69,12 +73,16 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             }
             amount.setText(txAmountString);
 
-            if (!StringUtils.isEmpty(tx.description)) {
+            if (!Strings.isNullOrEmpty(tx.description)) {
                 description.setText(tx.description);
+            }else{
+                description.setText(getContext().getResources().getString(R.string.not_specified));
             }
 
-            if (!StringUtils.isEmpty(tx.recipient)) {
+            if (!Strings.isNullOrEmpty(tx.recipient)) {
                 recipient.setText(tx.recipient);
+            }else{
+                recipient.setText(getContext().getResources().getString(R.string.not_specified));
             }
 
             if (highlight) {
@@ -83,6 +91,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     itemView.setBackgroundColor(context.getResources().getColor(R.color.highlight));
                 } else {
                     colorLabel.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                    itemView.setBackgroundColor(Color.TRANSPARENT);
                 }
             }
 

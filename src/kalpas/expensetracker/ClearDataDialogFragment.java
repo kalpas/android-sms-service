@@ -1,6 +1,5 @@
 package kalpas.expensetracker;
 
-import kalpas.expensetracker.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;

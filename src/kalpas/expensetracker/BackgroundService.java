@@ -7,8 +7,8 @@ import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.transaction.edit.EditTransactionActivity;
 import kalpas.sms.parse.PumbSmsParser;
 import kalpas.sms.parse.PumbSmsParserFactory;
-import kalpas.sms.parse.PumbTransaction;
 import kalpas.sms.parse.PumbSmsParserFactory.SmsLocale;
+import kalpas.sms.parse.PumbTransaction;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,14 +39,10 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
 
     private Core                core;
 
-    private Tags                tags;
-
     @Override
     public void onCreate() {
         super.onCreate();
         core = CoreFactory.getInstance(this);
-        tags = Tags.getTagsProvider();
-
     }
 
     @Override
@@ -79,11 +75,9 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
                 }
             } else if (ACTION_UPDATE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
-                tags.addTags(trx.tags, this);
                 core.updateTransactionDetails(trx);
             } else if (ACTION_ADD.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
-                tags.addTags(trx.tags, this);
                 core.addTransaction(trx);
             } else if (ACTION_REMOVE.equals(action)) {
                 Transaction trx = (Transaction) intent.getSerializableExtra(EXTRA_TRANSACTION);
@@ -91,6 +85,8 @@ public class BackgroundService extends Service implements OnSharedPreferenceChan
             } else {
                 Log.e(getClass().toString(), "no such action");
             }
+            Tags.getInstance(this).buildCache();
+
             sendRefresh();
         }
         return Service.START_STICKY;

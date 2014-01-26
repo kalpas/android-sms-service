@@ -1,6 +1,5 @@
 package kalpas.expensetracker;
 
-import kalpas.expensetracker.R;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.DialogPreference;

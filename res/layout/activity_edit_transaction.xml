@@ -156,19 +156,12 @@
             android:textOn="" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/tran_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:visibility="gone" >
-
-        <Spinner
-            android:id="@+id/spinner_tran_type"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
+    </FrameLayout>
 
     <EditText
         android:id="@+id/description"
@@ -208,7 +201,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:orientation="horizontal"
             android:visibility="gone" >
