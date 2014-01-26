@@ -155,17 +155,6 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         startService(update);
     }
 
-    // @Deprecated
-    // private void hideTagSelection() {
-    // tagsScrollView.setVisibility(View.GONE);
-    // tagsContainerLayout.removeAllViews();
-    //
-    // addTagsButton.setVisibility(View.VISIBLE);
-    // acceptTagsButton.setVisibility(View.GONE);
-    //
-    // tagsEditText.setVisibility(View.VISIBLE);
-    // }
-
     private void setDateTime(DateTime newDateTime) {
         tranDateModel = newDateTime;
         dateTextView.setText(dateFormatMid.print(tranDateModel));
@@ -352,6 +341,5 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         tagsEditText.requestFocus();
         tagsEditText.setHint(getResources().getString(R.string.new_tag_hint));
         tagsEditText.setSelection(tagsEditText.getText().length());
-
     }
 }

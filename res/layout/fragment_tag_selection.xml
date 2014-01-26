@@ -17,28 +17,35 @@
             android:id="@+id/button_discard"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="@android:color/darker_gray"
+            android:background="?android:attr/selectableItemBackground"
             android:drawableLeft="@drawable/navigation_cancel"
             android:text="@android:string/cancel" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dip"
+            android:layout_marginTop="4dip"
+            android:background="?android:attr/dividerVertical" />
 
         <Button
             android:id="@+id/button_save"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
+            android:background="?android:attr/selectableItemBackground"
             android:drawableLeft="@drawable/navigation_accept"
             android:text="@string/dialog_tran_save_button" />
     </LinearLayout>
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="1px"
+        android:layout_height="1dip"
         android:scaleType="fitXY"
         android:src="?android:attr/listDivider"
         tools:ignore="ContentDescription" />
@@ -57,7 +64,7 @@
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="1px"
+        android:layout_height="1dip"
         android:scaleType="fitXY"
         android:src="?android:attr/listDivider"
         tools:ignore="ContentDescription" />

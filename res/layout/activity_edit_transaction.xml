@@ -194,6 +194,7 @@
             android:hint="@string/tags_hint"
             android:inputType="textMultiLine" />
 
+
         <ImageButton
             android:id="@+id/button_add_tags"
             style="?android:attr/buttonBarButtonStyle"
@@ -203,6 +204,7 @@
             android:contentDescription="@string/add_tags"
             android:onClick="onAddTagsClick"
             android:src="@drawable/content_new" />
+
     </LinearLayout>
 
 </LinearLayout>
