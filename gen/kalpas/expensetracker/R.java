@@ -101,13 +101,8 @@ public final class R {
         public static final int amount_desc=0x7f070030;
         public static final int app_name=0x7f070000;
         public static final int button_refresh=0x7f070007;
-        public static final int card_credit=0x7f070034;
-        public static final int card_debit=0x7f070035;
-        public static final int cash_credit=0x7f070036;
-        public static final int cash_debit=0x7f070037;
         public static final int date_asc=0x7f07002d;
         public static final int date_desc=0x7f07002e;
-        public static final int deposit=0x7f070039;
         public static final int description=0x7f070016;
         public static final int dialog_clear_all=0x7f070010;
         public static final int dialog_clear_all_message=0x7f07000f;
@@ -118,7 +113,7 @@ public final class R {
         public static final int done=0x7f070024;
         public static final int edit_sender_hint=0x7f070006;
         public static final int enter_amount=0x7f070022;
-        public static final int hello_blank_fragment=0x7f07003a;
+        public static final int hello_blank_fragment=0x7f070037;
         public static final int hello_world=0x7f070004;
         public static final int mark_cash=0x7f070027;
         public static final int new_tag=0x7f070028;
@@ -147,7 +142,9 @@ public final class R {
         public static final int title_activity_settings=0x7f07000e;
         public static final int title_activity_summary=0x7f07001b;
         public static final int tran_edit_advanced=0x7f070026;
-        public static final int withdrawal=0x7f070038;
+        public static final int tran_type_expense=0x7f070035;
+        public static final int tran_type_income=0x7f070034;
+        public static final int tran_type_transfer=0x7f070036;
     }
     public static final class style {
         /** 

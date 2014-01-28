@@ -2,7 +2,10 @@ package kalpas.expensetracker.core;
 
 public class Account {
 
-    public String id;
+    public String name;
 
-    public double left = 0.;
+    public long   id;
+
+    public Double available = 0.;
+
 }

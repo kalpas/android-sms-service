@@ -5,22 +5,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import android.content.Context;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 public class AccountDAO {
 
     private static final String ACCOUNT_FILE_NAME = "account.json";
-    private Gson                gson            = new Gson();
+    private Gson                gson              = new Gson();
 
-
-    public void save(Account account, Context context) {
+    public void save(List<Account> accounts, Context context) {
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput(getFileName(account.id), Context.MODE_PRIVATE);
-            fos.write(gson.toJson(account).getBytes());
+            fos = context.openFileOutput(ACCOUNT_FILE_NAME, Context.MODE_PRIVATE);
+            fos.write(gson.toJson(accounts.toArray(new Account[accounts.size()])).getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -29,25 +30,21 @@ public class AccountDAO {
         }
     }
 
-    public Account load(String accountId, Context context){
-        Account account = null;
+    public List<Account> load(Context context) {
+        List<Account> accounts = null;
         FileInputStream fis;
         try {
-            fis = context.openFileInput(getFileName(accountId));
-            account = gson.fromJson(new InputStreamReader(fis), Account.class);
-        } catch (FileNotFoundException e) {
+            fis = context.openFileInput(ACCOUNT_FILE_NAME);
+            accounts = Lists.newArrayList(gson.fromJson(new InputStreamReader(fis), Account[].class));
+        } catch (Exception e) {
             e.printStackTrace();
+            deleteAll(context);// FIXME just for 1 time
+                               // cleanup
         }
-        return account;
-    }
-    
-    public void delete(String accountId, Context context){
-        context.deleteFile(getFileName(accountId));
+        return accounts;
     }
 
-
-    private String getFileName(String accountId) {
-        return accountId + ACCOUNT_FILE_NAME;
+    public void deleteAll(Context context) {
+        context.deleteFile(ACCOUNT_FILE_NAME);
     }
-
 }

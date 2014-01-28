@@ -70,20 +70,14 @@
     <string name="NONE">NONE</string>
 
     <string-array name="tran_types">
-        <item>@string/card_credit</item>
-        <item>@string/card_debit</item>
-        <item>@string/cash_debit</item>
-        <item>@string/cash_credit</item>
-        <item>@string/withdrawal</item>
-        <item>@string/deposit</item>
+        <item>@string/tran_type_income</item>
+        <item>@string/tran_type_expense</item>
+        <item>@string/tran_type_transfer</item>
     </string-array>
 
-    <string name="card_credit">card credit</string>
-    <string name="card_debit">card debit</string>
-    <string name="cash_credit">card credit</string>
-    <string name="cash_debit">card debit</string>
-    <string name="withdrawal">withdrawal</string>
-    <string name="deposit">deposit</string>
+    <string name="tran_type_income">income</string>
+    <string name="tran_type_expense">expense</string>
+    <string name="tran_type_transfer">transfer</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -7,15 +7,18 @@ import org.joda.time.DateTime;
 
 public class Transaction implements Serializable {
 
-    private static final long serialVersionUID = -568839622047507456L;
+    private static final long serialVersionUID = -6460816620130857576L;
 
     public Transaction(DateTime date) {
         this.date = date;
         this.id = date.getMillis() + new Date().getTime();
-        // + Math.round(Math.random() * Long.MAX_VALUE)
     }
 
-    public String   cardId = "default";
+    public long     payerId;
+
+    public String   payer;
+
+    public boolean  toAccount;
 
     public Double   amount;
 
@@ -23,13 +26,15 @@ public class Transaction implements Serializable {
 
     public String   tags;
 
+    public long     recipientId;
+
     public String   recipient;
 
     public DateTime date;
 
     public long     id;
 
-    public TranType tranType;
+    public TranType type;
 
     @Override
     public int hashCode() {
@@ -59,19 +64,12 @@ public class Transaction implements Serializable {
     }
 
     public enum TranType {
-        CARD_CREDIT(true, "card credit"), CARD_DEBIT(true, "card debit"), CASH_CREDIT(false, "cash_credit"), CASH_DEBIT(
-                false, "cash debit"), WITHDRAWAL(true, "withdrawal"), DEPOSIT(true, "deposit");
+        EXPENSE("expense"), INCOME("income"), TRANSFER("transfer");
 
-        private boolean cardOperation;
-        private String  name;
+        private String name;
 
-        private TranType(boolean cardOperation, String name) {
-            this.cardOperation = cardOperation;
+        private TranType(String name) {
             this.name = name;
-        }
-
-        public boolean isCardOperation() {
-            return cardOperation;
         }
 
         public static TranType forName(String typeName) {
