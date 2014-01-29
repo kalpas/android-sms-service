@@ -117,17 +117,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <ToggleButton
-            android:id="@+id/sign"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:textOff="-"
-            android:textOn="+"
-            android:textSize="18sp"
-            android:visibility="gone" />
-
         <EditText
             android:id="@+id/amount"
             android:layout_width="0dp"
@@ -136,11 +125,18 @@
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginTop="4dp"
-            android:layout_weight="0.75"
+            android:layout_weight="1"
             android:fontFamily="sans-serif-condensed"
             android:hint="@string/amount"
             android:inputType="phone"
             android:textSize="30sp" />
+
+        <Spinner
+            android:id="@+id/tran_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+             />
 
         <ToggleButton
             android:id="@+id/button_tran_details"
@@ -194,7 +190,6 @@
             android:hint="@string/tags_hint"
             android:inputType="textMultiLine" />
 
-
         <ImageButton
             android:id="@+id/button_add_tags"
             style="?android:attr/buttonBarButtonStyle"
@@ -204,7 +199,6 @@
             android:contentDescription="@string/add_tags"
             android:onClick="onAddTagsClick"
             android:src="@drawable/content_new" />
-
     </LinearLayout>
 
 </LinearLayout>

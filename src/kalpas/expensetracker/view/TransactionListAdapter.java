@@ -7,6 +7,7 @@ import java.util.List;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.core.Transaction.TranType;
 import android.content.Context;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
@@ -65,23 +66,27 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             date.setText(dateTimeMid.print(tx.date));
 
             String txAmountString = tx.amount.toString();
-            if (tx.amount > 0) {
+            if (TranType.INCOME.equals(tx.type)) {
                 txAmountString = "+" + txAmountString;
                 amount.setTextColor(context.getResources().getColor(android.R.color.holo_green_light));
-            } else {
+            } else if (TranType.EXPENSE.equals(tx.type)) {
+                txAmountString = "-" + txAmountString;
                 amount.setTextColor(context.getResources().getColor(android.R.color.holo_red_light));
+            } else {
+                amount.setTextColor(context.getResources().getColor(android.R.color.holo_orange_light));
             }
+            
             amount.setText(txAmountString);
 
             if (!Strings.isNullOrEmpty(tx.description)) {
                 description.setText(tx.description);
-            }else{
+            } else {
                 description.setText(getContext().getResources().getString(R.string.not_specified));
             }
 
             if (!Strings.isNullOrEmpty(tx.recipient)) {
                 recipient.setText(tx.recipient);
-            }else{
+            } else {
                 recipient.setText(getContext().getResources().getString(R.string.not_specified));
             }
 

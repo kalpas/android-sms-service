@@ -74,6 +74,10 @@ public class Tags {
 
     public List<String> getSuggestedTags(Transaction transaction) {
         List<String> result = new ArrayList<String>();
+        if (transaction == null) {
+            return result;
+        }
+
         String recipient = transaction.recipient;
         if (!Strings.isNullOrEmpty(recipient) && cache.containsKey(recipient)) {
             Multiset<String> tags = Multisets.copyHighestCountFirst(HashMultiset.create(cache.get(recipient)));

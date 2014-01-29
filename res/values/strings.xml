@@ -70,14 +70,16 @@
     <string name="NONE">NONE</string>
 
     <string-array name="tran_types">
-        <item>@string/tran_type_income</item>
         <item>@string/tran_type_expense</item>
+        <item>@string/tran_type_income</item>
         <item>@string/tran_type_transfer</item>
     </string-array>
 
     <string name="tran_type_income">income</string>
     <string name="tran_type_expense">expense</string>
     <string name="tran_type_transfer">transfer</string>
+    
+    
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

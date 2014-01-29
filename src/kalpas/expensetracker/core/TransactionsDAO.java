@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.expensetracker.view.utils.DateTimeFormatHolder.DateTimeTypeConverter;
 
 import org.joda.time.DateTime;
@@ -77,7 +78,26 @@ public class TransactionsDAO {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        ONE_TIME_DATA_CONVERSION(transactions, context);
+
         return transactions;
+    }
+
+    @Deprecated
+    // should be removed after v4
+    private void ONE_TIME_DATA_CONVERSION(List<Transaction> transactions, Context context) {
+        for (Transaction tran : transactions) {
+            if (tran.type == null) {
+                if (tran.amount > 0) {
+                    tran.type = TranType.INCOME;
+                } else {
+                    tran.type = TranType.EXPENSE;
+                }
+            }
+            tran.amount = Math.abs(tran.amount);
+        }
+        save(transactions, context);
     }
 
     public void deleteAll(Context context) {

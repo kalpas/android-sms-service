@@ -1,5 +1,6 @@
 package kalpas.expensetracker.core;
 
+import android.annotation.SuppressLint;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -72,13 +73,19 @@ public class Transaction implements Serializable {
             this.name = name;
         }
 
+        @SuppressLint("DefaultLocale")
         public static TranType forName(String typeName) {
             for (TranType type : TranType.values()) {
-                if (type.name.equals(typeName)) {
+                if (type.name.equals(typeName.toLowerCase())) {
                     return type;
                 }
             }
             throw new IllegalArgumentException("Illegal transaction type: " + typeName);
+        }
+        
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
