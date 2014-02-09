@@ -14,7 +14,7 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/button_discard"
+            android:id="@+id/button_cancel"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

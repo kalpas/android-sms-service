@@ -75,7 +75,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             } else {
                 amount.setTextColor(context.getResources().getColor(android.R.color.holo_orange_light));
             }
-            
+
             amount.setText(txAmountString);
 
             if (!Strings.isNullOrEmpty(tx.description)) {

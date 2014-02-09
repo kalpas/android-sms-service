@@ -8,7 +8,7 @@ import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import android.app.Activity;
-import android.app.DialogFragment;
+import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -25,20 +24,16 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 /**
- * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
- * contain this fragment must implement the
- * {@link TagSelectionFragment.OnTagsSelectedListener} interface to handle
- * interaction events. Use the {@link TagSelectionFragment#newInstance} factory
- * method to create an instance of this fragment.
  * 
  */
-public class TagSelectionFragment extends DialogFragment implements OnClickListener {
+public class TagSelectionFragment extends Fragment implements OnClickListener {
     private static final String    ARG_TRANSACTION = "ARG_TRANSACTION";
     public static final String     TAG             = "kalpas.expensetracker.view.transaction.edit.tags.TagSelectionFragment";
 
-    private Transaction            transactionModel;
+    private Transaction            mTransaction;
 
     private LinearLayout           tagListView;
 
@@ -74,13 +69,12 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            transactionModel = (Transaction) getArguments().getSerializable(ARG_TRANSACTION);
+            mTransaction = (Transaction) getArguments().getSerializable(ARG_TRANSACTION);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return inflater.inflate(R.layout.fragment_tag_selection, container, false);
     }
 
@@ -88,13 +82,13 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
     public void onResume() {
         super.onResume();
 
-        getDialog().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        getActivity().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
         tagListView = (LinearLayout) getView().findViewById(R.id.tag_list);
         preview = (TextView) getView().findViewById(R.id.tag_preview);
 
         okButton = (Button) getView().findViewById(R.id.button_save);
-        cancelButton = (Button) getView().findViewById(R.id.button_discard);
+        cancelButton = (Button) getView().findViewById(R.id.button_cancel);
         okButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
 
@@ -102,7 +96,7 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
 
         tagListView.addView(createNewTagButton());
 
-        Collection<String> suggestedTags = tagProvider.getSuggestedTags(transactionModel);
+        Collection<String> suggestedTags = tagProvider.getSuggestedTags(mTransaction);
         if (!suggestedTags.isEmpty()) {
             tagListView.addView(createSection(R.string.section_suggested));
             for (String tag : suggestedTags) {
@@ -220,8 +214,8 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-        case R.id.button_discard:
-            this.dismiss();
+        case R.id.button_cancel:
+            dismiss();
             break;
         case R.id.button_save:
             acceptTags();
@@ -232,17 +226,21 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
 
     }
 
-    private void acceptTags() {
-        hostingActivity.onTagsSelected(Joiner.on(", ").skipNulls().join(toggledTags));
-        toggledTags.clear();
-        this.dismiss();
+    private void dismiss() {
+        hostingActivity.onDismiss();
     }
 
-    // public void onTagsAccepted(Uri uri) {
-    // if (hostingActivity != null) {
-    // hostingActivity.onTagsSelected(uri);
-    // }
-    // }
+    private void acceptTags() {
+        if (!toggledTags.isEmpty()) {
+            String oldValue = mTransaction.tags;
+            if (!oldValue.isEmpty() && !oldValue.trim().endsWith(",")) {
+                oldValue += ", ";
+            }
+            mTransaction.tags = oldValue + Joiner.on(", ").skipNulls().join(toggledTags) + ",";
+            toggledTags.clear();
+        }
+        hostingActivity.onTagsSelected(mTransaction);
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -261,7 +259,9 @@ public class TagSelectionFragment extends DialogFragment implements OnClickListe
     }
 
     public interface OnTagsSelectedListener {
-        public void onTagsSelected(String tags);
+        public void onTagsSelected(Transaction transaction);
+
+        public void onDismiss();
     }
 
 }

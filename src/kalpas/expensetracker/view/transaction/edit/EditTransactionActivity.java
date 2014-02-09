@@ -1,65 +1,34 @@
 package kalpas.expensetracker.view.transaction.edit;
 
-import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.dateFormatMid;
-import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.timeFormatMid;
 import kalpas.expensetracker.BackgroundService;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Transaction;
-import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.expensetracker.view.datetime.DatePickerFragment;
 import kalpas.expensetracker.view.datetime.TimePickerFragment;
-import kalpas.expensetracker.view.suggestions.SuggestionsFragment;
 import kalpas.expensetracker.view.transaction.edit.tags.TagSelectionFragment;
 
 import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import com.google.common.base.Strings;
+public class EditTransactionActivity extends Activity implements TagSelectionFragment.OnTagsSelectedListener,
+        EditTransactionBasicFragment.OnBasicEditInteractionListener, TimePickerFragment.TimeSetListener,
+        DatePickerFragment.DateSetListener {
+    private static final int   REQUEST_CODE_SPLIT = 1;
 
-public class EditTransactionActivity extends Activity implements TimePickerFragment.TimeSetListener,
-        DatePickerFragment.DateSetListener, TagSelectionFragment.OnTagsSelectedListener {
+    public static final String ACTION_EDIT        = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
+    public static final String ACTION_SPLIT       = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SPLIT";
+    public static final String ACTION_ADD         = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_ADD";
 
-    private static final int           REQUEST_CODE_SPLIT = 1;
-    public static final String         ACTION_EDIT        = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT";
-    public static final String         ACTION_SPLIT       = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SPLIT";
-    public static final String         ACTION_ADD         = "kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_ADD";
+    private String             action;
 
-    private TextView                   dateTextView;
-    private TextView                   timeTextView;
-
-    private EditText                   amountEditText;
-    private EditText                   descriptionEditText;
-    private EditText                   tagsEditText;
-    private TextView                   recipientTextView;
-
-    private Transaction                transactionModel;
-    private DateTime                   tranDateModel;
-
-    private Button                     splitButton;
-
-    private FrameLayout                advancedTranDetailsView;
-
-    private String                     currentAction;
-
-    private Spinner                    tranTypeSpinner;
-
-    private ArrayAdapter<CharSequence> tranTypeSpinnerAdapter;
+    private Transaction        mTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,72 +37,40 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         setContentView(R.layout.activity_edit_transaction);
 
         getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
     }
 
     @Override
-    protected void onDestroy() {
-        setIntent(null);
-        transactionModel = null;
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        action = intent == null ? null : intent.getAction();
+        Transaction extra = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
+
+        Transaction transactionToEdit = null;
+        if (action != null) {
+            if (ACTION_ADD.equals(action)) {
+                transactionToEdit = new Transaction(new DateTime());
+            } else if (ACTION_EDIT.equals(action)) {
+                transactionToEdit = extra;
+            } else if (ACTION_SPLIT.equals(action)) {
+                mTransaction = extra;
+
+                transactionToEdit = new Transaction(new DateTime(extra.date));
+                transactionToEdit.amount = extra.amount;
+                transactionToEdit.type = extra.type;
+            }
+        }
+
+        EditTransactionBasicFragment fragment = EditTransactionBasicFragment.newInstance(transactionToEdit, action);
+        getFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, fragment, EditTransactionBasicFragment.TAG).commit();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        amountEditText = (EditText) findViewById(R.id.amount);
-        descriptionEditText = (EditText) findViewById(R.id.description);
-        tagsEditText = (EditText) findViewById(R.id.tags);
-        recipientTextView = (TextView) findViewById(R.id.recipient);
-        dateTextView = (TextView) findViewById(R.id.date);
-        timeTextView = (TextView) findViewById(R.id.time);
-
-        splitButton = (Button) findViewById(R.id.button_split);
-
-        advancedTranDetailsView = (FrameLayout) findViewById(R.id.tran_details);
-        tranTypeSpinner = (Spinner) findViewById(R.id.tran_type_spinner);
-
-        tranTypeSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.tran_types,
-                android.R.layout.simple_spinner_item);
-        tranTypeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tranTypeSpinner.setAdapter(tranTypeSpinnerAdapter);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Intent intent = getIntent();
-        currentAction = intent == null ? null : intent.getAction();
-        if (currentAction != null) {
-            if (ACTION_ADD.equals(currentAction)) {
-                splitButton.setVisibility(View.GONE);
-
-                setDateTime(new DateTime());
-                setRecepient(null);
-            } else {
-                transactionModel = (Transaction) intent.getSerializableExtra(BackgroundService.EXTRA_TRANSACTION);
-                setDateTime(new DateTime(transactionModel.date));
-                setRecepient(transactionModel.recipient);
-                tranTypeSpinner.setSelection(tranTypeSpinnerAdapter.getPosition(transactionModel.type.toString()));
-
-                if (ACTION_EDIT.equals(currentAction)) {
-                    descriptionEditText.setText(transactionModel.description);
-                    tagsEditText.setText(transactionModel.tags);
-
-                    amountEditText.setText(transactionModel.amount.toString());
-                } else if (ACTION_SPLIT.equals(currentAction)) {
-                    amountEditText.setText(transactionModel.amount.toString());
-                    splitButton.setVisibility(View.GONE);
-                }
-            }
-        }
     }
 
     @Override
@@ -150,56 +87,40 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
         }
     }
 
-    private void sendSplit(Transaction trxToSplit) {
+    // ******************** Misc. handlers ***********************************
+
+    private void startSplit(Transaction trxToSplit) {
         Intent splitIntent = new Intent(this, EditTransactionActivity.class);
         splitIntent.setAction(EditTransactionActivity.ACTION_SPLIT);
         splitIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, trxToSplit);
         startActivityForResult(splitIntent, REQUEST_CODE_SPLIT);
     }
 
-    private void sendUpdate(Transaction trx) {
+    private void startUpdate(Transaction trx) {
         Intent update = new Intent(this, BackgroundService.class);
         update.setAction(BackgroundService.ACTION_UPDATE);
         update.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
-        startService(update);
+        this.startService(update);
     }
 
-    private void setDateTime(DateTime newDateTime) {
-        tranDateModel = newDateTime;
-        dateTextView.setText(dateFormatMid.print(tranDateModel));
-        timeTextView.setText(timeFormatMid.print(tranDateModel));
+    private void startAdd(Transaction transaction) {
+        Intent addTrxIntent = new Intent(this, BackgroundService.class);
+        addTrxIntent.setAction(BackgroundService.ACTION_ADD);
+        addTrxIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+        startService(addTrxIntent);
     }
 
-    private void setRecepient(String recipient) {
-        if (Strings.isNullOrEmpty(recipient)) {
-            recipientTextView.setVisibility(View.GONE);
-        } else {
-            recipientTextView.setVisibility(View.VISIBLE);
-            recipientTextView.setText(recipient);
-        }
-    }
-
-    private void updateWithChanges(Transaction trx) {
-        trx.date = tranDateModel;
-        trx.amount = Math.abs(Double.valueOf(amountEditText.getText().toString()));
-        trx.description = descriptionEditText.getText().toString();
-        trx.tags = tagsEditText.getText().toString();
-        trx.type = TranType.forName((String) tranTypeSpinner.getSelectedItem());
-    }
-
-    // ******************** Misc. handlers ***********************************
+    // ***************************************************
 
     /**
      * DatePickerFragment.DateSetListener
      */
     @Override
     public void onDateSet(int year, int month, int day) {
-        MutableDateTime newDate = tranDateModel.toMutableDateTime();
-        newDate.setYear(year);
-        newDate.setMonthOfYear(month + 1);
-        newDate.setDayOfMonth(day);
+        EditTransactionBasicFragment fragment = (EditTransactionBasicFragment) getFragmentManager().findFragmentByTag(
+                EditTransactionBasicFragment.TAG);
 
-        setDateTime(newDate.toDateTime());
+        fragment.setDate(year, month, day);
     }
 
     /**
@@ -207,151 +128,85 @@ public class EditTransactionActivity extends Activity implements TimePickerFragm
      */
     @Override
     public void onTimeSet(int hourOfDay, int minute) {
-        MutableDateTime newTime = tranDateModel.toMutableDateTime();
-        newTime.setHourOfDay(hourOfDay);
-        newTime.setMinuteOfHour(minute);
+        EditTransactionBasicFragment fragment = (EditTransactionBasicFragment) getFragmentManager().findFragmentByTag(
+                EditTransactionBasicFragment.TAG);
 
-        setDateTime(newTime.toDateTime());
+        fragment.setTime(hourOfDay, minute);
+    }
+
+    // ************TagSelectionFragment***********************
+
+    /**
+     * {@link TagSelectionFragment#acceptTags}
+     */
+    @Override
+    public void onTagsSelected(Transaction transaction) {
+        EditTransactionBasicFragment fragment = EditTransactionBasicFragment.newInstance(transaction, ACTION_EDIT);
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        fragment.startEditTags();
     }
 
     /**
-     * Date onClick()
-     * 
-     * @param v
-     *            View
+     * {@link TagSelectionFragment#dismiss)
      */
-    public void showDatePickerDialog(View v) {
-        DatePickerFragment newFragment = new DatePickerFragment();
-        newFragment.date = tranDateModel;
-        newFragment.show(getFragmentManager(), "datePicker");
+    @Override
+    public void onDismiss() {
+        getFragmentManager().popBackStack();
     }
 
+    // ************EditTransactionBasicFragment.OnBasicEditInteractionListener***********************
     /**
-     * Time onClick()
-     * 
-     * @param v
-     *            View
+     * {@link EditTransactionBasicFragment.OnBasicEditInteractionListener#onCancel()}
      */
-    public void showTimePickerDialog(View v) {
-        TimePickerFragment newFragment = new TimePickerFragment();
-        newFragment.time = tranDateModel;
-        newFragment.show(getFragmentManager(), "timePicker");
-    }
-
-    /**
-     * Button discard onClick()
-     * 
-     * @param view
-     */
-    public void onCancel(View view) {
+    @Override
+    public void onCancel() {
         setResult(Activity.RESULT_CANCELED);
         this.finish();
     }
 
-    /**
-     * Button split onClick()
-     * 
-     * @param view
-     */
-    public void onSplit(View view) {
-        updateWithChanges(transactionModel);
-        sendSplit(transactionModel);
-    }
+    @Override
+    public void onSave(Transaction transaction) {
 
-    /**
-     * Button update onClick()
-     * 
-     * @param view
-     */
-    public void onUpdate(View view) {
-        // validate input
-        try {
-            Double.valueOf(amountEditText.getText().toString());
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, getResources().getString(R.string.enter_amount), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (ACTION_EDIT.equals(currentAction)) {
-            updateWithChanges(transactionModel);
-            sendUpdate(transactionModel);
-
+        if (ACTION_EDIT.equals(action)) {
+            startUpdate(transaction);
         } else {
-            Transaction trx;
-            trx = new Transaction(tranDateModel);
 
-            trx.amount = Math.abs(Double.valueOf(amountEditText.getText().toString()));
-            if (ACTION_SPLIT.equals(currentAction) && Math.abs(trx.amount) >= Math.abs(transactionModel.amount)) {
+            if (ACTION_SPLIT.equals(action) && Math.abs(transaction.amount) >= Math.abs(mTransaction.amount)) {
                 Toast.makeText(this, getResources().getString(R.string.split_amount_warning), Toast.LENGTH_SHORT)
                         .show();
                 return;// skip update
             }
 
-            trx.type = TranType.forName((String) tranTypeSpinner.getSelectedItem());
+            startAdd(transaction);
 
-            trx.description = descriptionEditText.getText().toString();
-            trx.tags = tagsEditText.getText().toString();
-
-            Intent addTrxIntent = new Intent(this, BackgroundService.class);
-            addTrxIntent.setAction(BackgroundService.ACTION_ADD);
-            addTrxIntent.putExtra(BackgroundService.EXTRA_TRANSACTION, trx);
-            startService(addTrxIntent);
-
-            if (currentAction != null && ACTION_SPLIT.equals(currentAction)) {
-                transactionModel.amount -= trx.amount;
-                sendUpdate(transactionModel);
-
-                Intent result = new Intent(this, EditTransactionActivity.class);
-                result.setAction(EditTransactionActivity.ACTION_EDIT);
-                result.putExtra(BackgroundService.EXTRA_TRANSACTION, transactionModel);
-                setResult(Activity.RESULT_OK, result);
+            if (action != null && ACTION_SPLIT.equals(action)) {
+                mTransaction.amount -= transaction.amount;
+                startUpdate(mTransaction);
+                returnResult(mTransaction);
             }
         }
 
         this.finish();
-        return;
     }
 
-    /**
-     * add tagsEditText onClick
-     */
-    public void onAddTagsClick(View v) {
-        TagSelectionFragment.newInstance(transactionModel).show(getFragmentManager(), TagSelectionFragment.TAG);
-    }
-
-    /**
-     * advanced options
-     */
-    public void onAdvancedTransactionDetailsClick(View v) {
-        ToggleButton toggle = (ToggleButton) v;
-        if (toggle.isChecked()) {
-            advancedTranDetailsView.setVisibility(View.VISIBLE);
-            SuggestionsFragment fragment = SuggestionsFragment.newInstance(transactionModel);
-
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.add(R.id.tran_details, fragment, SuggestionsFragment.TAG);
-            transaction.commit();
-
-        } else {
-            advancedTranDetailsView.setVisibility(View.GONE);
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.remove(getFragmentManager().findFragmentByTag(SuggestionsFragment.TAG));
-            transaction.commit();
-        }
+    private void returnResult(Transaction transaction) {
+        Intent result = new Intent(this, EditTransactionActivity.class);
+        result.setAction(EditTransactionActivity.ACTION_EDIT);
+        result.putExtra(BackgroundService.EXTRA_TRANSACTION, transaction);
+        setResult(Activity.RESULT_OK, result);
     }
 
     @Override
-    public void onTagsSelected(String tags) {
-        if (!Strings.isNullOrEmpty(tags)) {
-            String oldValue = tagsEditText.getText().toString();
-            if (!oldValue.isEmpty() && !oldValue.trim().endsWith(",")) {
-                oldValue += ", ";
-            }
-            tagsEditText.setText(oldValue + tags + ",");
-        }
+    public void onSplit(Transaction transaction) {
+        startSplit(transaction);
+    }
 
-        tagsEditText.requestFocus();
-        tagsEditText.setHint(getResources().getString(R.string.new_tag_hint));
-        tagsEditText.setSelection(tagsEditText.getText().length());
+    @Override
+    public void onEditTags(Transaction transaction) {
+        mTransaction = transaction;
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, TagSelectionFragment.newInstance(mTransaction));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
