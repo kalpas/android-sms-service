@@ -87,6 +87,10 @@ public class TransactionsDAO {
     @Deprecated
     // should be removed after v4
     private void ONE_TIME_DATA_CONVERSION(List<Transaction> transactions, Context context) {
+        if (transactions == null) {
+            return;
+        }
+
         for (Transaction tran : transactions) {
             if (tran.type == null) {
                 if (tran.amount > 0) {

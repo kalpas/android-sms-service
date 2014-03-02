@@ -7,6 +7,7 @@ import java.util.List;
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
+import kalpas.expensetracker.view.TagsListAdapter;
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Typeface;
@@ -17,25 +18,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 
 /**
  * 
  */
-public class TagSelectionFragment extends Fragment implements OnClickListener {
+public class TagSelectionFragment extends Fragment implements OnClickListener, OnItemClickListener {
     private static final String    ARG_TRANSACTION = "ARG_TRANSACTION";
     public static final String     TAG             = "kalpas.expensetracker.view.transaction.edit.tags.TagSelectionFragment";
 
     private Transaction            mTransaction;
 
-    private LinearLayout           tagListView;
+    private ListView               mTagListView;
 
     private Button                 okButton;
     private Button                 cancelButton;
@@ -84,7 +87,7 @@ public class TagSelectionFragment extends Fragment implements OnClickListener {
 
         getActivity().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
-        tagListView = (LinearLayout) getView().findViewById(R.id.tag_list);
+        mTagListView = (ListView) getView().findViewById(R.id.tag_list);
         preview = (TextView) getView().findViewById(R.id.tag_preview);
 
         okButton = (Button) getView().findViewById(R.id.button_save);
@@ -94,31 +97,38 @@ public class TagSelectionFragment extends Fragment implements OnClickListener {
 
         Tags tagProvider = Tags.getInstance(getActivity());
 
-        tagListView.addView(createNewTagButton());
+        TagsListAdapter adapter = new TagsListAdapter(getActivity(), R.layout.tag_list_entry,
+                R.layout.tag_list_section, tagProvider.getSuggestedTags(mTransaction), tagProvider.getPopularTags(),
+                tagProvider.getTags());
 
-        Collection<String> suggestedTags = tagProvider.getSuggestedTags(mTransaction);
-        if (!suggestedTags.isEmpty()) {
-            tagListView.addView(createSection(R.string.section_suggested));
-            for (String tag : suggestedTags) {
-                // tagsContainerLayout.addView(createDivider());
-                tagListView.addView(createTagButton(tag));
-            }
-        } else {
-            suggestedTags = tagProvider.getPopularTags();
-            tagListView.addView(createSection(R.string.section_popular));
-            for (String tag : suggestedTags) {
-                // tagsContainerLayout.addView(createDivider());
-                tagListView.addView(createTagButton(tag));
-            }
-        }
+        mTagListView.setAdapter(adapter);
+        mTagListView.setOnItemClickListener(this);
+        mTagListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        tagListView.addView(createSection(R.string.section_other));
-
-        Collection<String> tagsList = tagProvider.getTags();
-        for (String tag : tagsList) {
-            // tagsContainerLayout.addView(createDivider());
-            tagListView.addView(createTagButton(tag));
-        }
+        /*
+         * mTagListView.setEmptyView(getView().findViewById(R.id.empty));
+         * 
+         * mTagListView.addView(createNewTagButton());
+         * 
+         * Collection<String> suggestedTags =
+         * tagProvider.getSuggestedTags(mTransaction); if
+         * (!suggestedTags.isEmpty()) {
+         * mTagListView.addView(createSection(R.string.section_suggested)); for
+         * (String tag : suggestedTags) { //
+         * tagsContainerLayout.addView(createDivider());
+         * mTagListView.addView(createTagButton(tag)); } } else { suggestedTags =
+         * tagProvider.getPopularTags();
+         * mTagListView.addView(createSection(R.string.section_popular)); for
+         * (String tag : suggestedTags) { //
+         * tagsContainerLayout.addView(createDivider());
+         * mTagListView.addView(createTagButton(tag)); } }
+         * 
+         * mTagListView.addView(createSection(R.string.section_other));
+         * 
+         * Collection<String> tagsList = tagProvider.getTags(); for (String tag
+         * : tagsList) { // tagsContainerLayout.addView(createDivider());
+         * mTagListView.addView(createTagButton(tag)); }
+         */
     }
 
     // ************************
@@ -223,6 +233,16 @@ public class TagSelectionFragment extends Fragment implements OnClickListener {
             break;
 
         }
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position == 0) {
+            acceptTags();
+        }
+        //TODO
+        //mTagListView.getCheckedItemPositions();
 
     }
 

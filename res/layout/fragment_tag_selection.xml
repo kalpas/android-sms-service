@@ -25,7 +25,7 @@
             android:text="@android:string/cancel" />
 
         <View
-            android:layout_width="1dip"
+            android:layout_width="1px"
             android:layout_height="match_parent"
             android:layout_marginBottom="4dip"
             android:layout_marginTop="4dip"
@@ -45,7 +45,7 @@
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="1dip"
+        android:layout_height="1px"
         android:scaleType="fitXY"
         android:src="?android:attr/listDivider"
         tools:ignore="ContentDescription" />
@@ -64,26 +64,22 @@
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="1dip"
+        android:layout_height="1px"
         android:scaleType="fitXY"
         android:src="?android:attr/listDivider"
         tools:ignore="ContentDescription" />
 
-    <ScrollView
-        android:id="@+id/tag_list_parent"
+    <ListView
+        android:id="@+id/tag_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:orientation="horizontal" >
-
-        <LinearLayout
-            android:id="@+id/tag_list"
-            android:layout_width="match_parent"
+        android:layout_gravity="left" />
+    
+      <ViewStub
+            android:id="@+id/empty"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:divider="?android:attr/listDivider"
-            android:orientation="vertical"
-            android:showDividers="middle" >
-        </LinearLayout>
-    </ScrollView>
+            android:layout_gravity="center"
+            android:layout="@layout/tag_list_empty" />
 
 </LinearLayout>
