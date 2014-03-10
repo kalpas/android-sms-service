@@ -206,7 +206,8 @@ public final class R {
         public static final int list_item=0x7f030007;
         public static final int tag_list_empty=0x7f030008;
         public static final int tag_list_entry=0x7f030009;
-        public static final int tag_list_section=0x7f03000a;
+        public static final int tag_list_manual=0x7f03000a;
+        public static final int tag_list_section=0x7f03000b;
     }
     public static final class menu {
         public static final int add_transaction=0x7f0a0000;

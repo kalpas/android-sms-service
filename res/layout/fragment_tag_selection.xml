@@ -20,16 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="@android:color/darker_gray"
             android:drawableLeft="@drawable/navigation_cancel"
             android:text="@android:string/cancel" />
-
-        <View
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="4dip"
-            android:layout_marginTop="4dip"
-            android:background="?android:attr/dividerVertical" />
 
         <Button
             android:id="@+id/button_save"
@@ -38,17 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="@android:color/holo_green_light"
             android:drawableLeft="@drawable/navigation_accept"
             android:text="@string/dialog_tran_save_button" />
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="1px"
-        android:scaleType="fitXY"
-        android:src="?android:attr/listDivider"
-        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/tag_preview"

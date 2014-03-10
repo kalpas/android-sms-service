@@ -91,8 +91,8 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
 
         Tags tagProvider = Tags.getInstance(getActivity());
 
-        mTagListAdapter = new TagsListAdapter(getActivity(), R.layout.tag_list_entry, R.layout.tag_list_section,
-                tagProvider.getSuggestedTags(mTransaction), tagProvider.getPopularTags(), tagProvider.getTags());
+        mTagListAdapter = new TagsListAdapter(getActivity(), tagProvider.getSuggestedTags(mTransaction),
+                tagProvider.getPopularTags(), tagProvider.getTags());
 
         mTagListView.setAdapter(mTagListAdapter);
         mTagListView.setOnItemClickListener(this);

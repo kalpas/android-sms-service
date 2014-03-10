@@ -6,7 +6,6 @@ import java.util.List;
 
 import kalpas.expensetracker.R;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +18,14 @@ public class TagsListAdapter extends BaseAdapter {
     private static final int  VIEW_TYPE_MANUAL_EDIT = 2;
     private static final int  VIEW_TYPE_COUNT       = 3;
 
-    // R.layout.tag_list_section : R.layout.tag_list_entry
-    private final int         mElementLayout;
-    private final int         mSectionLayout;
+    private final int         mElementLayout        = R.layout.tag_list_entry;
+    private final int         mSectionLayout        = R.layout.tag_list_section;
+    private final int         mManualEditLayout     = R.layout.tag_list_manual;
     private final Context     mContext;
     private final List<Entry> mItems;
 
-    public TagsListAdapter(Context context, int elementLayout, int sectionLayout, Collection<String> suggested,
-            Collection<String> popular, Collection<String> other) {
-        this.mElementLayout = elementLayout;
-        this.mSectionLayout = sectionLayout;
+    public TagsListAdapter(Context context, Collection<String> suggested, Collection<String> popular,
+            Collection<String> other) {
         this.mContext = context;
         this.mItems = new ArrayList<Entry>();
 
@@ -79,15 +76,24 @@ public class TagsListAdapter extends BaseAdapter {
             itemView = convertView;
         } else {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            int resource = (type == VIEW_TYPE_SECTION ? mSectionLayout : mElementLayout);
+            int resource;
+            switch (type) {
+            case VIEW_TYPE_SECTION:
+                resource = mSectionLayout;
+                break;
+            case VIEW_TYPE_MANUAL_EDIT:
+                resource = mManualEditLayout;
+                break;
+            default:
+                resource = mElementLayout;
+                break;
+            }
+
             itemView = inflater.inflate(resource, null);
         }
 
         TextView text = (TextView) itemView.findViewById(R.id.text);
         text.setText(mItems.get(position).value);
-        if (type == VIEW_TYPE_MANUAL_EDIT) {
-            text.setTypeface(null, Typeface.ITALIC);
-        }
         return itemView;
 
     }
@@ -116,8 +122,6 @@ public class TagsListAdapter extends BaseAdapter {
         return position;
     }
 
-    
-    
     public class Entry {
         public String  value;
         public boolean isSection = false;
