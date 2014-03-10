@@ -92,15 +92,6 @@ public class TagsListAdapter extends BaseAdapter {
 
     }
 
-    private class Entry {
-        public String  value;
-        public boolean isSection = false;
-        
-        public Entry(String value) {
-            this.value = value;
-        }
-    }
-
     private void populateSection(Collection<String> other, int captionResource) {
         Entry section = new Entry(mContext.getResources().getString(captionResource));
         section.isSection = true;
@@ -123,5 +114,16 @@ public class TagsListAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    
+    
+    public class Entry {
+        public String  value;
+        public boolean isSection = false;
+
+        public Entry(String value) {
+            this.value = value;
+        }
     }
 }

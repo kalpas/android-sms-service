@@ -1,19 +1,16 @@
 package kalpas.expensetracker.view.transaction.edit.tags;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TagsListAdapter;
+import kalpas.expensetracker.view.TagsListAdapter.Entry;
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,11 +18,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.google.common.base.Joiner;
 
@@ -39,15 +34,14 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
     private Transaction            mTransaction;
 
     private ListView               mTagListView;
+    private TagsListAdapter        mTagListAdapter;
 
     private Button                 okButton;
     private Button                 cancelButton;
 
     private TextView               preview;
 
-    private OnTagsSelectedListener hostingActivity;
-
-    private List<String>           toggledTags     = new ArrayList<String>();
+    private OnTagsSelectedListener mEditTranActivity;
 
     /**
      * Use this factory method to create a new instance of this fragment using
@@ -97,126 +91,13 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
 
         Tags tagProvider = Tags.getInstance(getActivity());
 
-        TagsListAdapter adapter = new TagsListAdapter(getActivity(), R.layout.tag_list_entry,
-                R.layout.tag_list_section, tagProvider.getSuggestedTags(mTransaction), tagProvider.getPopularTags(),
-                tagProvider.getTags());
+        mTagListAdapter = new TagsListAdapter(getActivity(), R.layout.tag_list_entry, R.layout.tag_list_section,
+                tagProvider.getSuggestedTags(mTransaction), tagProvider.getPopularTags(), tagProvider.getTags());
 
-        mTagListView.setAdapter(adapter);
+        mTagListView.setAdapter(mTagListAdapter);
         mTagListView.setOnItemClickListener(this);
         mTagListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        /*
-         * mTagListView.setEmptyView(getView().findViewById(R.id.empty));
-         * 
-         * mTagListView.addView(createNewTagButton());
-         * 
-         * Collection<String> suggestedTags =
-         * tagProvider.getSuggestedTags(mTransaction); if
-         * (!suggestedTags.isEmpty()) {
-         * mTagListView.addView(createSection(R.string.section_suggested)); for
-         * (String tag : suggestedTags) { //
-         * tagsContainerLayout.addView(createDivider());
-         * mTagListView.addView(createTagButton(tag)); } } else { suggestedTags =
-         * tagProvider.getPopularTags();
-         * mTagListView.addView(createSection(R.string.section_popular)); for
-         * (String tag : suggestedTags) { //
-         * tagsContainerLayout.addView(createDivider());
-         * mTagListView.addView(createTagButton(tag)); } }
-         * 
-         * mTagListView.addView(createSection(R.string.section_other));
-         * 
-         * Collection<String> tagsList = tagProvider.getTags(); for (String tag
-         * : tagsList) { // tagsContainerLayout.addView(createDivider());
-         * mTagListView.addView(createTagButton(tag)); }
-         */
-    }
-
-    // ************************
-
-    private TextView createNewTagButton() {
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, getResources()
-                .getDisplayMetrics());
-        LinearLayout.LayoutParams layoutParams = getTagListLayoutParams();
-
-        Button newTag = new Button(getActivity(), null, android.R.attr.buttonBarButtonStyle);
-        newTag.setLayoutParams(layoutParams);
-        newTag.setTypeface(null, Typeface.ITALIC);
-        newTag.setText(getResources().getString(R.string.new_tag));
-        newTag.setClickable(true);
-        newTag.setMinimumHeight(height);
-        newTag.setMinHeight(height);
-        newTag.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-
-        newTag.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                acceptTags();
-            }
-        });
-        return newTag;
-    }
-
-    private TextView createSection(int resource) {
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, getResources()
-                .getDisplayMetrics());
-        LinearLayout.LayoutParams layoutParams = getTagListLayoutParams();
-
-        TextView section = new TextView(getActivity(), null, android.R.attr.buttonBarButtonStyle);
-        section.setLayoutParams(layoutParams);
-        section.setTypeface(null, Typeface.BOLD);
-        section.setBackgroundColor(getResources().getColor(R.color.section));
-        section.setText(getResources().getString(resource));
-        section.setMinimumHeight(height);
-        section.setMinHeight(height);
-        section.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-
-        return section;
-    }
-
-    private ToggleButton createTagButton(String tag) {
-        ToggleButton itemView;
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, getResources()
-                .getDisplayMetrics());
-        LinearLayout.LayoutParams layoutParams = getTagListLayoutParams();
-
-        itemView = new ToggleButton(getActivity(), null, android.R.attr.buttonBarButtonStyle);
-        itemView.setLayoutParams(layoutParams);
-        itemView.setMinimumHeight(height);
-        itemView.setMinHeight(height);
-        itemView.setText(tag);
-        itemView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToggleButton button = (ToggleButton) v;
-                if (button.isChecked()) {
-                    toggledTags.add(button.getText().toString());
-                    button.setTextColor(getResources().getColor(android.R.color.holo_blue_bright));
-                    button.setBackgroundColor(getResources().getColor(R.color.highlight));
-                } else {
-                    toggledTags.remove(button.getText().toString());
-                    button.setTextColor(getResources().getColor(android.R.color.white));
-                    button.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                }
-                preview.setText(Joiner.on(", ").skipNulls().join(toggledTags) + ",");
-            }
-        });
-
-        return itemView;
-    }
-
-    /**
-     * add tagsEditText onClick
-     */
-    public void onAcceptTagsClick(View v) {
-    }
-
-    private LinearLayout.LayoutParams getTagListLayoutParams() {
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT);
-        return layoutParams;
     }
 
     // ************************
@@ -241,32 +122,52 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
         if (position == 0) {
             acceptTags();
         }
-        //TODO
-        //mTagListView.getCheckedItemPositions();
 
+        SparseBooleanArray checked = mTagListView.getCheckedItemPositions();
+        ArrayList<String> selectedTags = new ArrayList<String>();
+        for (int i = 0; i < checked.size(); i++) {
+            if (checked.valueAt(i) && checked.keyAt(i) != 0) {
+                Entry item = (Entry) mTagListAdapter.getItem(checked.keyAt(i));
+                selectedTags.add(item.value);
+            }
+
+        }
+        preview.setText(Joiner.on(", ").skipNulls().join(selectedTags));
+
+        // Toast.makeText(getActivity(), builder.toString(),
+        // Toast.LENGTH_SHORT).show();
     }
 
     private void dismiss() {
-        hostingActivity.onDismiss();
+        mEditTranActivity.onDismiss();
     }
 
     private void acceptTags() {
-        if (!toggledTags.isEmpty()) {
+        SparseBooleanArray checked = mTagListView.getCheckedItemPositions();
+        ArrayList<String> selectedTags = new ArrayList<String>();
+        for (int i = 0; i < checked.size(); i++) {
+            if (checked.valueAt(i) && checked.keyAt(i) != 0) {
+                Entry item = (Entry) mTagListAdapter.getItem(checked.keyAt(i));
+                selectedTags.add(item.value);
+            }
+
+        }
+
+        if (!selectedTags.isEmpty()) {
             String oldValue = mTransaction.tags;
             if (!oldValue.isEmpty() && !oldValue.trim().endsWith(",")) {
                 oldValue += ", ";
             }
-            mTransaction.tags = oldValue + Joiner.on(", ").skipNulls().join(toggledTags) + ",";
-            toggledTags.clear();
+            mTransaction.tags = oldValue + Joiner.on(", ").skipNulls().join(selectedTags) + ",";
         }
-        hostingActivity.onTagsSelected(mTransaction);
+        mEditTranActivity.onTagsSelected(mTransaction);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            hostingActivity = (OnTagsSelectedListener) activity;
+            mEditTranActivity = (OnTagsSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnTagsSelectedListener");
         }
@@ -275,7 +176,7 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
     @Override
     public void onDetach() {
         super.onDetach();
-        hostingActivity = null;
+        mEditTranActivity = null;
     }
 
     public interface OnTagsSelectedListener {
