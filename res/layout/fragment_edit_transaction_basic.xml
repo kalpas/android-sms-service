@@ -143,12 +143,12 @@
             android:textOn="" />
     </LinearLayout>
 
-    <FrameLayout
+    <ViewStub
         android:id="@+id/tran_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" >
-    </FrameLayout>
+        android:layout_gravity="center"
+        android:layout="@layout/stub_tran_details" />
 
     <EditText
         android:id="@+id/description"

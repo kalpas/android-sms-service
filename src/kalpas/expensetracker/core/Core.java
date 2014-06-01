@@ -145,6 +145,7 @@ public class Core {
         transactionsDao.save(transactions, context);
     }
 
+    @Deprecated
     private String getATMStats(Collection<Transaction> trxs) {
         StringBuilder text = new StringBuilder();
 
@@ -285,5 +286,10 @@ public class Core {
         transactions.add(tran);
         transactionsDao.save(transactions, context);
         return tran;
+    }
+
+    public void backupData() {
+        TransactionsDAO backup = new TransactionsDAO(true, "tranBackup");
+        backup.save(transactionsDao.load(context), context);
     }
 }

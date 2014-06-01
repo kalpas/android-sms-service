@@ -1,6 +1,8 @@
 package kalpas.expensetracker.view.transaction.edit.tags;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import kalpas.expensetracker.R;
 import kalpas.expensetracker.core.Tags;
@@ -91,8 +93,13 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
 
         Tags tagProvider = Tags.getInstance(getActivity());
 
-        mTagListAdapter = new TagsListAdapter(getActivity(), tagProvider.getSuggestedTags(mTransaction),
-                tagProvider.getPopularTags(), tagProvider.getTags());
+        List<String> suggestedTags = tagProvider.getSuggestedTags(mTransaction);
+        Collection<String> popularTags = tagProvider.getPopularTags();
+        Collection<String> otherTags = tagProvider.getTags();
+        otherTags.removeAll(popularTags);
+        otherTags.removeAll(suggestedTags);
+        mTagListAdapter = new TagsListAdapter(getActivity(), suggestedTags,
+                popularTags, otherTags);
 
         mTagListView.setAdapter(mTagListAdapter);
         mTagListView.setOnItemClickListener(this);
@@ -144,6 +151,10 @@ public class TagSelectionFragment extends Fragment implements OnClickListener, O
 
     private void acceptTags() {
         SparseBooleanArray checked = mTagListView.getCheckedItemPositions();
+        if(checked == null || checked.size()==0){//check if anything was accepted
+            mEditTranActivity.onDismiss();
+        }
+        
         ArrayList<String> selectedTags = new ArrayList<String>();
         for (int i = 0; i < checked.size(); i++) {
             if (checked.valueAt(i) && checked.keyAt(i) != 0) {

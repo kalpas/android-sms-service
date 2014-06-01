@@ -4,7 +4,6 @@ import java.util.List;
 
 import kalpas.expensetracker.core.Core;
 import kalpas.expensetracker.core.CoreFactory;
-import kalpas.expensetracker.core.Tags;
 import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.view.TransactionListAdapter;
 import kalpas.expensetracker.view.summary.SummaryActivity;
@@ -101,6 +100,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
         if (action != null) {
             if (ClearAllPreference.CLEAR_ALL_ACTION.equals(action)) {
                 core.clearData();
+                refresh();
+            }else if (BackupDataPreference.BACKUP_DATA_ACTION.equals(action)){
+                core.backupData();
                 refresh();
             }
         }

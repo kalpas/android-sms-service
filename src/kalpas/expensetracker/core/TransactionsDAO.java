@@ -1,5 +1,6 @@
 package kalpas.expensetracker.core;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import kalpas.expensetracker.MainActivity;
 import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.expensetracker.view.utils.DateTimeFormatHolder.DateTimeTypeConverter;
 
@@ -15,7 +17,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,6 +35,8 @@ import com.google.gson.JsonSerializer;
 public class TransactionsDAO {
 
     private static final String TRANSACTIONS_FILE_NAME = "transactions.json";
+    private final String        fileName;
+    private final boolean       SDCard;
     private GsonBuilder         gsonBuilder;
     private Gson                gson;
 
@@ -46,17 +53,37 @@ public class TransactionsDAO {
         }
     }
 
-    public TransactionsDAO() {
+    public TransactionsDAO(boolean SDCard, String fileName) {
+        if (Strings.isNullOrEmpty(fileName)) {
+            this.fileName = TRANSACTIONS_FILE_NAME;
+        } else {
+            this.fileName = fileName;
+        }
+        this.SDCard = SDCard;
         gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter());
         gsonBuilder.registerTypeAdapter(Instant.class, new InstantTypeConverter());
         gson = gsonBuilder.create();
+
+    }
+
+    public TransactionsDAO() {
+        this(false, null);
     }
 
     public void save(List<Transaction> transactions, Context context) {
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput(getFileName(), Context.MODE_PRIVATE);
+            if (!SDCard) {
+                fos = context.openFileOutput(getFileName(), Context.MODE_PRIVATE);
+            } else {
+                File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/smslog");
+                dir.mkdirs();
+                File file = new File(dir, getFileName());
+                Log.d(MainActivity.TAG, file.getAbsolutePath());
+                fos = new FileOutputStream(file, true);
+            }
+
             fos.write(gson.toJson(transactions.toArray(new Transaction[transactions.size()])).getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
@@ -109,6 +136,6 @@ public class TransactionsDAO {
     }
 
     private String getFileName() {
-        return TRANSACTIONS_FILE_NAME;
+        return fileName;
     }
 }

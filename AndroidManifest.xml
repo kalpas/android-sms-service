@@ -60,6 +60,10 @@
             android:label="@string/title_activity_add_transaction"
             android:theme="@android:style/Theme.Holo.Dialog" >
         </activity>
+        <activity
+            android:name="kalpas.expensetracker.AccountsActivity"
+            android:label="@string/title_activity_accounts" >
+        </activity>
     </application>
 
 </manifest>

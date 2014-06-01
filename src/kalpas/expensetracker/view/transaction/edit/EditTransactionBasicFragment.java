@@ -1,7 +1,6 @@
 package kalpas.expensetracker.view.transaction.edit;
 
 import static kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_ADD;
-import static kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_EDIT;
 import static kalpas.expensetracker.view.transaction.edit.EditTransactionActivity.ACTION_SPLIT;
 import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.dateFormatMid;
 import static kalpas.expensetracker.view.utils.DateTimeFormatHolder.timeFormatMid;
@@ -10,22 +9,20 @@ import kalpas.expensetracker.core.Transaction;
 import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.expensetracker.view.datetime.DatePickerFragment;
 import kalpas.expensetracker.view.datetime.TimePickerFragment;
-import kalpas.expensetracker.view.suggestions.SuggestionsFragment;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,12 +35,11 @@ import com.google.common.base.Strings;
  * 
  */
 public class EditTransactionBasicFragment extends Fragment implements View.OnClickListener {
-    
-    public final static String TAG = "kalpas.expensetracker.view.transaction.edit.EditTransactionBasicFragment";
-    
+
+    public final static String             TAG             = "kalpas.expensetracker.view.transaction.edit.EditTransactionBasicFragment";
+
     private static final String            ARG_TRANSACTION = "ARG_TRANSACTION";
     private static final String            ARG_ACTION      = "ARG_ACTION";
-    
 
     private OnBasicEditInteractionListener hostingActivity;
 
@@ -67,7 +63,7 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
     private ImageButton                    addtagsButton;
 
     private ToggleButton                   tranDetailsButton;
-    private FrameLayout                    advancedTranDetailsView;
+    private ViewStub                       mTranDetails;
 
     private String                         action;
 
@@ -142,7 +138,7 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
         addtagsButton = (ImageButton) view.findViewById(R.id.button_add_tags);
         addtagsButton.setOnClickListener(this);
 
-        advancedTranDetailsView = (FrameLayout) view.findViewById(R.id.tran_details);
+        mTranDetails = (ViewStub) view.findViewById(R.id.tran_details);
         tranTypeSpinner = (Spinner) view.findViewById(R.id.tran_type_spinner);
 
         tranTypeSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.tran_types,
@@ -158,26 +154,19 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
         super.onActivityCreated(savedInstanceState);
 
         if (action != null) {
-            if (ACTION_ADD.equals(action)) {
+            if (ACTION_ADD.equals(action) || ACTION_SPLIT.equals(action)) {
                 splitButton.setVisibility(View.GONE);
-                setDateTime(new DateTime());
-                setRecepient(null);
-            } else {
-
-                setDateTime(new DateTime(transactionModel.date));
-                setRecepient(transactionModel.recipient);
-                tranTypeSpinner.setSelection(tranTypeSpinnerAdapter.getPosition(transactionModel.type.toString()));
-
-                if (ACTION_EDIT.equals(action)) {
-                    descriptionEditText.setText(transactionModel.description);
-                    tagsEditText.setText(transactionModel.tags);
-
-                    amountEditText.setText(transactionModel.amount.toString());
-                } else if (ACTION_SPLIT.equals(action)) {
-                    amountEditText.setText(transactionModel.amount.toString());
-                    splitButton.setVisibility(View.GONE);
+                if (ACTION_ADD.equals(action)) {
+                    setDateTime(new DateTime());
                 }
+            } else {
+                setDateTime(new DateTime(transactionModel.date));
+                tranTypeSpinner.setSelection(tranTypeSpinnerAdapter.getPosition(transactionModel.type.toString()));
             }
+            descriptionEditText.setText(transactionModel.description);
+            setRecepient(transactionModel.recipient);
+            tagsEditText.setText(transactionModel.tags);
+            amountEditText.setText(transactionModel.amount == null ? "" : transactionModel.amount.toString());
         }
     }
 
@@ -204,25 +193,25 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
 
         switch (v.getId()) {
         case R.id.button_save:
-            // validate input
-            try {
-                Double.valueOf(amountEditText.getText().toString());
-            } catch (NumberFormatException e) {
+            if (!isAmountValid(amountEditText.getText().toString())) {
                 Toast.makeText(getActivity(), getResources().getString(R.string.enter_amount), Toast.LENGTH_SHORT)
                         .show();
                 return;
             }
-
             updateWithChanges(transactionModel);
-
             hostingActivity.onSave(transactionModel);
+            break;
+        case R.id.button_split:
+            if (!isAmountValid(amountEditText.getText().toString())) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.enter_amount), Toast.LENGTH_SHORT)
+                .show();
+                return;
+            }
+            updateWithChanges(transactionModel);
+            hostingActivity.onSplit(transactionModel);
             break;
         case R.id.button_cancel:
             hostingActivity.onCancel();
-            break;
-        case R.id.button_split:
-            updateWithChanges(transactionModel);
-            hostingActivity.onSplit(transactionModel);
             break;
         case R.id.button_add_tags:
             updateWithChanges(transactionModel);
@@ -241,6 +230,24 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
             break;
         }
 
+    }
+
+    boolean isAmountValid(String amountString) {
+        // validate input
+        boolean valid = true;
+        if (!Strings.isNullOrEmpty(amountString)) {
+            try {
+                Double value = Double.valueOf(amountString);
+                if (value.equals(0.)) {
+                    valid = false;
+                }
+            } catch (NumberFormatException e) {
+                valid = false;
+            }
+        } else {
+            valid = false;
+        }
+        return valid;
     }
 
     /**
@@ -266,7 +273,7 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
         newFragment.time = tranDateModel;
         newFragment.show(getFragmentManager(), "timePicker");
     }
-    
+
     // ***************************************************
     public void setDate(int year, int month, int day) {
         MutableDateTime newDate = tranDateModel.toMutableDateTime();
@@ -288,7 +295,12 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
     // ***************************************************
     private void updateWithChanges(Transaction tran) {
         tran.date = tranDateModel;
-        tran.amount = Math.abs(Double.valueOf(amountEditText.getText().toString()));
+        String amountString = amountEditText.getText().toString();
+        if (!Strings.isNullOrEmpty(amountString)) {
+            tran.amount = Math.abs(Double.valueOf(amountString));
+        } else {
+            tran.amount = null;
+        }
         tran.description = descriptionEditText.getText().toString();
         tran.tags = tagsEditText.getText().toString();
         tran.type = TranType.forName((String) tranTypeSpinner.getSelectedItem());
@@ -300,18 +312,10 @@ public class EditTransactionBasicFragment extends Fragment implements View.OnCli
     public void onAdvancedTransactionDetailsClick(View v) {
         ToggleButton toggle = (ToggleButton) v;
         if (toggle.isChecked()) {
-            advancedTranDetailsView.setVisibility(View.VISIBLE);
-            SuggestionsFragment fragment = SuggestionsFragment.newInstance(transactionModel);
-
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.add(R.id.tran_details, fragment, SuggestionsFragment.TAG);
-            transaction.commit();
+            mTranDetails.setVisibility(View.VISIBLE);
 
         } else {
-            advancedTranDetailsView.setVisibility(View.GONE);
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.remove(getFragmentManager().findFragmentByTag(SuggestionsFragment.TAG));
-            transaction.commit();
+            mTranDetails.setVisibility(View.GONE);
         }
     }
 

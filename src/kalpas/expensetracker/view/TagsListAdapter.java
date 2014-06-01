@@ -33,12 +33,15 @@ public class TagsListAdapter extends BaseAdapter {
         Entry manualEdit = new Entry(mContext.getResources().getString(R.string.new_tag));
         mItems.add(manualEdit);
 
-        if (suggested != null && !suggested.isEmpty()) {
+        if (!suggested.isEmpty()) {
             populateSection(popular, R.string.section_suggested);
         } else {
             populateSection(popular, R.string.section_popular);
         }
-        populateSection(other, R.string.section_other);
+        
+        if (!other.isEmpty()) {
+            populateSection(other, R.string.section_other);
+        }
 
     }
 

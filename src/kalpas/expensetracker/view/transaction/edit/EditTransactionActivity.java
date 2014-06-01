@@ -51,6 +51,7 @@ public class EditTransactionActivity extends Activity implements TagSelectionFra
         if (action != null) {
             if (ACTION_ADD.equals(action)) {
                 transactionToEdit = new Transaction(new DateTime());
+                
             } else if (ACTION_EDIT.equals(action)) {
                 transactionToEdit = extra;
             } else if (ACTION_SPLIT.equals(action)) {
@@ -141,9 +142,11 @@ public class EditTransactionActivity extends Activity implements TagSelectionFra
      */
     @Override
     public void onTagsSelected(Transaction transaction) {
-        EditTransactionBasicFragment fragment = EditTransactionBasicFragment.newInstance(transaction, ACTION_EDIT);
+        EditTransactionBasicFragment fragment = EditTransactionBasicFragment.newInstance(transaction, action);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
         fragment.startEditTags();
+
+        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
     /**
@@ -152,6 +155,7 @@ public class EditTransactionActivity extends Activity implements TagSelectionFra
     @Override
     public void onDismiss() {
         getFragmentManager().popBackStack();
+        getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
     // ************EditTransactionBasicFragment.OnBasicEditInteractionListener***********************

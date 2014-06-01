@@ -47,6 +47,7 @@ public class Tags {
             return instance;
         }
 
+        result.buildCache();// FIXME: please deal with that cache
         return result;
     }
 
@@ -65,9 +66,13 @@ public class Tags {
 
         for (Transaction element : list) {
             String recipient = element.recipient;
-            if (!Strings.isNullOrEmpty(recipient) && !Strings.isNullOrEmpty(element.tags)) {
+            if (!Strings.isNullOrEmpty(element.tags)) {
                 Iterable<String> tagArray = splitter.split(element.tags);
-                cache.putAll(recipient, tagArray);
+                if (!Strings.isNullOrEmpty(recipient)) {
+                    cache.putAll(recipient, tagArray);
+                } else {
+                    cache.putAll("none", tagArray);
+                }
             }
         }
     }
