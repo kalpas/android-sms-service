@@ -99,7 +99,7 @@ public class Core {
 
         text.append(Tags.getInstance(context).debugOutput());
         
-        text.append("added by Oleg");
+        text.append("added by Oleg!");
 
         return text.toString();
     }
