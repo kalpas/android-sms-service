@@ -23,6 +23,10 @@
     <kalpas.expensetracker.BackupDataPreference
         android:summary="@string/pref_backup_data_summ"
         android:title="@string/pref_backup_data" />
+    
+    <kalpas.expensetracker.RestoreDataPreference
+        android:summary="@string/pref_restore_data_summ"
+        android:title="@string/pref_restore_data" />
 
     <CheckBoxPreference
         android:defaultValue="true"

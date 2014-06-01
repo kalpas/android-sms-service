@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+
 import kalpas.expensetracker.core.Transaction.TranType;
 import kalpas.sms.parse.PumbTransaction;
 import android.content.Context;
@@ -98,8 +100,6 @@ public class Core {
         text.append("_____________\n");
 
         text.append(Tags.getInstance(context).debugOutput());
-        
-        text.append("added by Oleg!");
 
         return text.toString();
     }
@@ -291,7 +291,13 @@ public class Core {
     }
 
     public void backupData() {
-        TransactionsDAO backup = new TransactionsDAO(true, "tranBackup");
+        TransactionsDAO backup = new TransactionsDAO(true, "transactions" + new DateTime().getMillis());
         backup.save(transactionsDao.load(context), context);
+    }
+
+    public void restoreData() {
+        transactionsDao.deleteAll(context);
+        TransactionsDAO restore = new TransactionsDAO(true, "transactions");
+        transactionsDao.save(restore.load(context), context);
     }
 }

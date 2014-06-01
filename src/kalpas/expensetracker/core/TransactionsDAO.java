@@ -19,6 +19,7 @@ import org.joda.time.Instant;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -34,6 +35,7 @@ import com.google.gson.JsonSerializer;
 
 public class TransactionsDAO {
 
+    private static final String SDCARD_DIR             = "/smslog";
     private static final String TRANSACTIONS_FILE_NAME = "transactions.json";
     private final String        fileName;
     private final boolean       SDCard;
@@ -77,11 +79,11 @@ public class TransactionsDAO {
             if (!SDCard) {
                 fos = context.openFileOutput(getFileName(), Context.MODE_PRIVATE);
             } else {
-                File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/smslog");
+                File dir = new File(Environment.getExternalStorageDirectory().getPath() + SDCARD_DIR);
                 dir.mkdirs();
                 File file = new File(dir, getFileName());
                 Log.d(MainActivity.TAG, file.getAbsolutePath());
-                fos = new FileOutputStream(file, true);
+                fos = new FileOutputStream(file, false);
             }
 
             fos.write(gson.toJson(transactions.toArray(new Transaction[transactions.size()])).getBytes());
@@ -97,12 +99,20 @@ public class TransactionsDAO {
         List<Transaction> transactions = null;
         FileInputStream fis;
         try {
-            fis = context.openFileInput(getFileName());
+            if (!SDCard) {
+                fis = context.openFileInput(getFileName());
+            } else {
+                File dir = new File(Environment.getExternalStorageDirectory().getPath() + SDCARD_DIR);
+                File file = new File(dir, getFileName());
+                Log.d(MainActivity.TAG, file.getAbsolutePath());
+                fis = new FileInputStream(file);
+            }
             Transaction[] fromJson = gson.fromJson(new InputStreamReader(fis), Transaction[].class);
             if (fromJson != null) {
                 transactions = Lists.newArrayList(fromJson);
             }
         } catch (FileNotFoundException e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

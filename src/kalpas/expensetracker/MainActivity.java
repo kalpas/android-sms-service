@@ -104,6 +104,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnIte
             }else if (BackupDataPreference.BACKUP_DATA_ACTION.equals(action)){
                 core.backupData();
                 refresh();
+            }else if (RestoreDataPreference.RESTORE_DATA_ACTION.equals(action)){
+                core.restoreData();
+                refresh();
             }
         }
         setIntent(null);
