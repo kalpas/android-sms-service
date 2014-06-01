@@ -98,6 +98,8 @@ public class Core {
         text.append("_____________\n");
 
         text.append(Tags.getInstance(context).debugOutput());
+        
+        text.append("added by Oleg");
 
         return text.toString();
     }
